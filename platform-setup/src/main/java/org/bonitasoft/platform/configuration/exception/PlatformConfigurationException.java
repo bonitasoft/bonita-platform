@@ -17,7 +17,16 @@ package org.bonitasoft.platform.configuration.exception;
  * @author Laurent Leseigneur
  */
 public class PlatformConfigurationException extends Exception {
+
     public PlatformConfigurationException(Exception e) {
         super(e);
+    }
+
+    public PlatformConfigurationException(String message) {
+        super(message);
+    }
+
+    public PlatformConfigurationException(String message, Exception cause) {
+        super(message, cause);
     }
 }

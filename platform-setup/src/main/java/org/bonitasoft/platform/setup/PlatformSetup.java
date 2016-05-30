@@ -31,6 +31,8 @@ import org.bonitasoft.platform.configuration.exception.PlatformConfigurationExce
 import org.bonitasoft.platform.configuration.impl.ConfigurationServiceImpl;
 import org.bonitasoft.platform.configuration.model.BonitaConfiguration;
 import org.bonitasoft.platform.configuration.type.ConfigurationType;
+import org.bonitasoft.platform.version.VersionService;
+import org.bonitasoft.platform.version.impl.VersionServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +66,9 @@ public class PlatformSetup {
 
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    private VersionService versionService;
 
     @Value("${db.vendor}")
     private String dbVendor;
@@ -136,11 +141,12 @@ public class PlatformSetup {
 
     /**
      * push all configuration files and licenses
-     * 
+     *
      * @throws PlatformSetupException
      */
-    public void push() throws PlatformSetupException {
+    public void push() throws PlatformSetupException, PlatformConfigurationException {
         initPlatformSetup();
+        checkPlatformVersion();
         push(currentConfigurationFolder);
         LOGGER.info("New configuration successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
     }
@@ -161,7 +167,8 @@ public class PlatformSetup {
                 + ". You can now edit the configuration files and push the changes to update the platform");
     }
 
-    public void pull(Path destinationFolder) throws PlatformConfigurationException {
+    public void pull(Path destinationFolder) throws PlatformConfigurationException, PlatformSetupException {
+        checkPlatformVersion();
         try {
             if (Files.exists(destinationFolder)) {
                 FileUtils.deleteDirectory(destinationFolder.toFile());
@@ -170,6 +177,13 @@ public class PlatformSetup {
             configurationService.writeAllConfigurationToFolder(destinationFolder.toFile());
         } catch (IOException e) {
             throw new PlatformConfigurationException(e);
+        }
+    }
+
+    private void checkPlatformVersion() throws PlatformSetupException {
+        if (!versionService.isValidPlatformVersion()) {
+            throw new PlatformSetupException(new StringBuilder().append("Platform version [").append(versionService.getPlatformVersion())
+                    .append("] is not supported by current platform setup version [").append(versionService.getPlatformSetupVersion()).append("]").toString());
         }
     }
 
@@ -313,6 +327,9 @@ public class PlatformSetup {
         if (configurationService == null) {
             final DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager(dataSource);
             configurationService = new ConfigurationServiceImpl(new JdbcTemplate(dataSource), new TransactionTemplate(dataSourceTransactionManager), dbVendor);
+        }
+        if (versionService == null) {
+            versionService = new VersionServiceImpl(new JdbcTemplate(dataSource), dbVendor);
         }
     }
 

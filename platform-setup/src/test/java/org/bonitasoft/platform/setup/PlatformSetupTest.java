@@ -33,6 +33,7 @@ import org.bonitasoft.platform.configuration.type.ConfigurationType;
 import org.bonitasoft.platform.configuration.util.AllConfigurationResourceVisitor;
 import org.bonitasoft.platform.setup.jndi.MemoryJNDISetup;
 import org.bonitasoft.platform.util.ConfigurationFolderUtil;
+import org.bonitasoft.platform.version.VersionService;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,6 +78,9 @@ public class PlatformSetupTest {
 
     @Autowired
     PlatformSetup platformSetup;
+
+    @Autowired
+    VersionService versionService;
 
     private ConfigurationFolderUtil configurationFolderUtil = new ConfigurationFolderUtil();
 
@@ -371,5 +375,40 @@ public class PlatformSetupTest {
         Files.walkFileTree(checkPath, new AllConfigurationResourceVisitor(configurations));
         assertThat(configurations).as("should remove all files").hasSize(1)
                 .extracting("resourceName").containsOnly("current.properties");
+    }
+
+    @Test
+    public void should_push_check_platform_version() throws Exception {
+        //given
+        platformSetup.init();
+        jdbcTemplate.execute("UPDATE platform SET version='bad version'");
+
+        //then
+        expectedException.expect(PlatformSetupException.class);
+        expectedException.expectMessage(
+                "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
+
+        //when
+        final Path confFolder = temporaryFolder.newFolder().toPath();
+        configurationFolderUtil.buildCurrentFolder(confFolder);
+        System.setProperty(BONITA_SETUP_FOLDER, confFolder.toFile().getAbsolutePath());
+        platformSetup.push();
+    }
+
+    @Test
+    public void should_pull_check_platform_version() throws Exception {
+        //given
+        platformSetup.init();
+        jdbcTemplate.execute("UPDATE platform SET version='bad version'");
+
+        //then
+        expectedException.expect(PlatformSetupException.class);
+        expectedException.expectMessage(
+                "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
+
+        //when
+        final Path destFolder = temporaryFolder.newFolder("destFolder").toPath();
+        platformSetup.pull(destFolder);
+
     }
 }

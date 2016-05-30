@@ -1,5 +1,7 @@
 #!/bin/sh
 
+mvn clean install -DskipTests -f ../pom.xml
+
 export VERSION=`cat ../platform-setup/target/classes/VERSION`
 
 echo "========================================"
@@ -8,8 +10,6 @@ echo "========================================"
 export E2E_DIR="target/e2e-postgres-bos"
 export ZIP=Bonita-BPM-platform-setup-${VERSION}.zip
 
-
-mvn clean install -DskipTests -f ../pom.xml
 unzip -q -d ${E2E_DIR} target/${ZIP}
 cp src/main/standalone/logback.xml ${E2E_DIR}/platform_conf
 

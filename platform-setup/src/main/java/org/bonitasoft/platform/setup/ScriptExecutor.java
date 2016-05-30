@@ -29,7 +29,8 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
+import org.bonitasoft.platform.version.VersionService;
+import org.bonitasoft.platform.version.impl.VersionServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,8 @@ public class ScriptExecutor {
 
     private final String dbVendor;
 
+    private VersionService versionService;
+
     @Autowired
     public ScriptExecutor(@Value("${db.vendor}") String dbVendor) throws NamingException {
         this(dbVendor, new DataSourceLookup().lookup());
@@ -86,6 +89,8 @@ public class ScriptExecutor {
         this.datasource = datasource;
         logger.info("configuration for Database vendor: " + dbVendor);
         this.sqlFolder = "/sql/" + dbVendor;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
+        this.versionService = new VersionServiceImpl(jdbcTemplate);
     }
 
     public void createTables() throws PlatformSetupException {
@@ -108,14 +113,10 @@ public class ScriptExecutor {
     }
 
     protected void insertPlatform() throws PlatformSetupException {
-        try {
-            String version = getVersion();
-            final String sql = "INSERT INTO platform (id, version, previousversion, initialversion, created, createdby) VALUES (1, '" + version + "', '', '"
-                    + version + "', " + System.currentTimeMillis() + ", 'platformAdmin')";
-            new JdbcTemplate(datasource).update(sql);
-        } catch (IOException e) {
-            throw new PlatformSetupException(e);
-        }
+        String version = versionService.getPlatformSetupVersion();
+        final String sql = "INSERT INTO platform (id, version, previousversion, initialversion, created, createdby) VALUES (1, '" + version + "', '', '"
+                + version + "', " + System.currentTimeMillis() + ", 'platformAdmin')";
+        new JdbcTemplate(datasource).update(sql);
     }
 
     public boolean isPlatformAlreadyCreated() {
@@ -212,10 +213,6 @@ public class ScriptExecutor {
         } catch (final IOException | SQLException e) {
             throw new PlatformSetupException(e);
         }
-    }
-
-    protected String getVersion() throws IOException {
-        return IOUtils.toString(this.getClass().getResource("/VERSION"));
     }
 
 }

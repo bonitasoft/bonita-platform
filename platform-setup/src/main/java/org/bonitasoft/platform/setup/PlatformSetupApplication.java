@@ -27,7 +27,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author Emmanuel Duchastenier
  */
 @SpringBootApplication
-@ComponentScan(basePackages = { "org.bonitasoft.platform.setup", "org.bonitasoft.platform.configuration" })
+@ComponentScan(basePackages = { "org.bonitasoft.platform.setup", "org.bonitasoft.platform.configuration", "org.bonitasoft.platform.version" })
 public class PlatformSetupApplication {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PlatformSetupApplication.class);
@@ -81,7 +81,7 @@ public class PlatformSetupApplication {
         run.getBean(PlatformSetup.class).pull();
     }
 
-    private static void push(ConfigurableApplicationContext run) throws PlatformSetupException {
+    private static void push(ConfigurableApplicationContext run) throws PlatformConfigurationException, PlatformSetupException {
         run.getBean(PlatformSetup.class).push();
     }
 
