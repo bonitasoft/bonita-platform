@@ -711,11 +711,10 @@ CREATE TABLE role (
   name VARCHAR(255) NOT NULL,
   displayName VARCHAR(255),
   description LONGVARCHAR,
-  iconName VARCHAR(50),
-  iconPath VARCHAR(50),
   createdBy BIGINT,
   creationDate BIGINT,
   lastUpdate BIGINT,
+  iconid BIGINT,
   UNIQUE (tenantid, name),
   PRIMARY KEY (tenantid, id)
 );

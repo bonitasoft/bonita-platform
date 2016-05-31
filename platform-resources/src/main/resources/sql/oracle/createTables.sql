@@ -704,11 +704,10 @@ CREATE TABLE role (
   name VARCHAR2(255 CHAR) NOT NULL,
   displayName VARCHAR2(255 CHAR),
   description VARCHAR2(1024 CHAR),
-  iconName VARCHAR2(50 CHAR),
-  iconPath VARCHAR2(50 CHAR),
   createdBy NUMBER(19, 0),
   creationDate NUMBER(19, 0),
   lastUpdate NUMBER(19, 0),
+  iconid NUMBER(19, 0),
   CONSTRAINT UK_Role UNIQUE (tenantId, name),
   PRIMARY KEY (tenantid, id)
 );
