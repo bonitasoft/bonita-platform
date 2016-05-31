@@ -698,11 +698,10 @@ CREATE TABLE group_ (
   parentPath VARCHAR(255),
   displayName VARCHAR(255),
   description TEXT,
-  iconName VARCHAR(50),
-  iconPath VARCHAR(50),
   createdBy BIGINT,
   creationDate BIGINT,
   lastUpdate BIGINT,
+  iconid BIGINT,
   UNIQUE (tenantid, parentPath, name),
   PRIMARY KEY (tenantid, id)
 ) ENGINE = INNODB;

@@ -690,11 +690,10 @@ CREATE TABLE group_ (
   parentPath VARCHAR2(255 CHAR),
   displayName VARCHAR2(255 CHAR),
   description VARCHAR2(1024 CHAR),
-  iconName VARCHAR2(50 CHAR),
-  iconPath VARCHAR2(50 CHAR),
   createdBy NUMBER(19, 0),
   creationDate NUMBER(19, 0),
   lastUpdate NUMBER(19, 0),
+  iconid NUMBER(19, 0),
   CONSTRAINT UK_Group UNIQUE (tenantid, parentPath, name),
   PRIMARY KEY (tenantid, id)
 );

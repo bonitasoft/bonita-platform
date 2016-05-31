@@ -796,11 +796,10 @@ CREATE TABLE group_ (
   parentPath NVARCHAR(255),
   displayName NVARCHAR(255),
   description NVARCHAR(MAX),
-  iconName NVARCHAR(50),
-  iconPath NVARCHAR(50),
   createdBy NUMERIC(19, 0),
   creationDate NUMERIC(19, 0),
   lastUpdate NUMERIC(19, 0),
+  iconid NUMERIC(19, 0),
   UNIQUE (tenantid, parentPath, name),
   PRIMARY KEY (tenantid, id)
 )
