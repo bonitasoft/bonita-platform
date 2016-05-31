@@ -30,7 +30,7 @@ IF NOT "%ACTION%" == "init" IF NOT "%ACTION%" == "pull" IF NOT "%ACTION%" == "pu
 echo using database %BONITA_DATABASE%
 echo action is %ACTION%
 
-java -cp "%BASEDIR%;%CFG_FOLDER%;%INITIAL_CFG_FOLDER%;%LIB_FOLDER%\*" -Dorg.bonitasoft.platform.setup.action=%ACTION% -Dspring.profiles.active=default -Dsysprop.bonita.db.vendor=%BONITA_DATABASE% org.springframework.boot.loader.JarLauncher
+java -cp "%BASEDIR%;%CFG_FOLDER%;%INITIAL_CFG_FOLDER%;%LIB_FOLDER%\*" -Dorg.bonitasoft.platform.setup.action=%ACTION% -Dspring.profiles.active=default -Dsysprop.bonita.db.vendor=%BONITA_DATABASE% org.bonitasoft.platform.setup.PlatformSetupApplication
 
 IF "%ACTION%" == "pull" (
         echo Pulled configuration:

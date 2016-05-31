@@ -117,34 +117,6 @@
 
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${springboot.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>com.h2database</groupId>
-                            <artifactId>h2</artifactId>
-                        </exclude>
-                        <exclude>
-                            <groupId>org.postgresql</groupId>
-                            <artifactId>postgresql</artifactId>
-                        </exclude>
-                        <exclude>
-                            <artifactId>mysql-connector-java</artifactId>
-                            <groupId>mysql</groupId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
