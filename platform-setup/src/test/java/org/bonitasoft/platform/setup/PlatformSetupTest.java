@@ -31,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.bonitasoft.platform.configuration.model.FullBonitaConfiguration;
 import org.bonitasoft.platform.configuration.type.ConfigurationType;
 import org.bonitasoft.platform.configuration.util.AllConfigurationResourceVisitor;
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.setup.jndi.MemoryJNDISetup;
 import org.bonitasoft.platform.util.ConfigurationFolderUtil;
 import org.bonitasoft.platform.version.VersionService;
@@ -314,7 +315,7 @@ public class PlatformSetupTest {
         assertThat(platformSetup.isPlatformAlreadyCreated()).isFalse();
 
         //expect
-        expectedException.expect(PlatformSetupException.class);
+        expectedException.expect(PlatformException.class);
         expectedException.expectMessage("Platform is not created. run platform setup before pushing configuration.");
 
         //when
@@ -384,7 +385,7 @@ public class PlatformSetupTest {
         jdbcTemplate.execute("UPDATE platform SET version='bad version'");
 
         //then
-        expectedException.expect(PlatformSetupException.class);
+        expectedException.expect(PlatformException.class);
         expectedException.expectMessage(
                 "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
 
@@ -402,7 +403,7 @@ public class PlatformSetupTest {
         jdbcTemplate.execute("UPDATE platform SET version='bad version'");
 
         //then
-        expectedException.expect(PlatformSetupException.class);
+        expectedException.expect(PlatformException.class);
         expectedException.expectMessage(
                 "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
 

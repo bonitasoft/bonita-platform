@@ -14,7 +14,7 @@
 
 package org.bonitasoft.platform.version;
 
-import org.bonitasoft.platform.setup.PlatformSetupException;
+import org.bonitasoft.platform.exception.PlatformException;
 
 /**
  * @author Laurent Leseigneur
@@ -26,7 +26,7 @@ public interface VersionService {
      *
      * @return platform current version
      */
-    String getPlatformVersion() throws PlatformSetupException;
+    String getPlatformVersion() throws PlatformException;
 
     /**
      * Retrieves the platform setup tool version
@@ -40,5 +40,5 @@ public interface VersionService {
      *
      * @return true if same version, false otherwise
      */
-    boolean isValidPlatformVersion() throws PlatformSetupException;
+    boolean isValidPlatformVersion() throws PlatformException;
 }

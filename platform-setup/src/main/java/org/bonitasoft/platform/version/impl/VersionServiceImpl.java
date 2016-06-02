@@ -20,8 +20,8 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.setup.DataSourceLookup;
-import org.bonitasoft.platform.setup.PlatformSetupException;
 import org.bonitasoft.platform.version.VersionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,15 +62,15 @@ public class VersionServiceImpl implements VersionService {
     }
 
     @Override
-    public String getPlatformVersion() throws PlatformSetupException {
+    public String getPlatformVersion() throws PlatformException {
         final List<String> strings;
         try {
             strings = jdbcTemplate.query(SQL_PLATFORM_VERSION, new PlatformRowMapper());
         } catch (DataAccessException e) {
-            throw new PlatformSetupException("Platform is not created. run platform setup before pushing configuration.", e);
+            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.", e);
         }
         if (hasNotSingleResult(strings)) {
-            throw new PlatformSetupException("Platform is not created. run platform setup before pushing configuration.");
+            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.");
         }
         return strings.get(0);
     }
@@ -91,7 +91,7 @@ public class VersionServiceImpl implements VersionService {
     }
 
     @Override
-    public boolean isValidPlatformVersion() throws PlatformSetupException {
+    public boolean isValidPlatformVersion() throws PlatformException {
         return getPlatformVersion().equals(getPlatformSetupVersion());
     }
 

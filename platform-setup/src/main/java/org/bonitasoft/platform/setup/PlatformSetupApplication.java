@@ -13,7 +13,7 @@
  **/
 package org.bonitasoft.platform.setup;
 
-import org.bonitasoft.platform.configuration.exception.PlatformConfigurationException;
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.setup.jndi.MemoryJNDISetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,15 +77,15 @@ public class PlatformSetupApplication {
         System.exit(1);
     }
 
-    private static void pull(ConfigurableApplicationContext run) throws PlatformConfigurationException, PlatformSetupException {
+    private static void pull(ConfigurableApplicationContext run) throws PlatformException {
         run.getBean(PlatformSetup.class).pull();
     }
 
-    private static void push(ConfigurableApplicationContext run) throws PlatformConfigurationException, PlatformSetupException {
+    private static void push(ConfigurableApplicationContext run) throws PlatformException {
         run.getBean(PlatformSetup.class).push();
     }
 
-    private static void init(ConfigurableApplicationContext run) throws PlatformSetupException {
+    private static void init(ConfigurableApplicationContext run) throws PlatformException {
         run.getBean(PlatformSetup.class).init();
     }
 }

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2016 Bonitasoft S.A.
  * Bonitasoft, 32 rue Gustave Eiffel - 38000 Grenoble
  * This library is free software; you can redistribute it and/or modify it under the terms
@@ -10,23 +10,23 @@
  * You should have received a copy of the GNU Lesser General Public License along with this
  * program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301, USA.
- */
-package org.bonitasoft.platform.setup;
+ **/
+package org.bonitasoft.platform.exception;
 
 /**
- * @author Emmanuel Duchastenier
+ * @author Laurent Leseigneur
  */
-public class PlatformSetupException extends Exception {
+public class PlatformException extends Exception {
 
-    public PlatformSetupException(Exception e) {
+    public PlatformException(Exception e) {
         super(e);
     }
 
-    public PlatformSetupException(String message) {
+    public PlatformException(String message) {
         super(message);
     }
 
-    public PlatformSetupException(String message, Exception cause) {
+    public PlatformException(String message, Exception cause) {
         super(message, cause);
     }
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.version.VersionService;
 import org.bonitasoft.platform.version.impl.VersionServiceImpl;
 import org.slf4j.Logger;
@@ -93,16 +94,16 @@ public class ScriptExecutor {
         this.versionService = new VersionServiceImpl(jdbcTemplate);
     }
 
-    public void createTables() throws PlatformSetupException {
+    public void createTables() throws PlatformException {
         try {
             executeSQLResources(asList("dropQuartzTables.sql", "dropTables.sql", "createTables.sql", "createQuartzTables.sql", "postCreateStructure.sql"),
                     FAIL_ON_ERROR);
         } catch (final IOException | SQLException e) {
-            throw new PlatformSetupException(e);
+            throw new PlatformException(e);
         }
     }
 
-    public void createAndInitializePlatformIfNecessary() throws PlatformSetupException {
+    public void createAndInitializePlatformIfNecessary() throws PlatformException {
         if (!isPlatformAlreadyCreated()) {
             createTables();
             initializePlatformStructure();
@@ -112,7 +113,7 @@ public class ScriptExecutor {
         }
     }
 
-    protected void insertPlatform() throws PlatformSetupException {
+    protected void insertPlatform() throws PlatformException {
         String version = versionService.getPlatformSetupVersion();
         final String sql = "INSERT INTO platform (id, version, previousversion, initialversion, created, createdby) VALUES (1, '" + version + "', '', '"
                 + version + "', " + System.currentTimeMillis() + ", 'platformAdmin')";
@@ -199,19 +200,19 @@ public class ScriptExecutor {
         }
     }
 
-    public void initializePlatformStructure() throws PlatformSetupException {
+    public void initializePlatformStructure() throws PlatformException {
         try {
             executeSQLResources(Collections.singletonList("initTables.sql"), FAIL_ON_ERROR);
         } catch (final IOException | SQLException e) {
-            throw new PlatformSetupException(e);
+            throw new PlatformException(e);
         }
     }
 
-    public void deleteTables() throws PlatformSetupException {
+    public void deleteTables() throws PlatformException {
         try {
             executeSQLResources(asList("preDropStructure.sql", "dropQuartzTables.sql", "dropTables.sql"), CONTINUE_ON_ERROR);
         } catch (final IOException | SQLException e) {
-            throw new PlatformSetupException(e);
+            throw new PlatformException(e);
         }
     }
 

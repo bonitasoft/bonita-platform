@@ -28,7 +28,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.platform.configuration.ConfigurationService;
-import org.bonitasoft.platform.configuration.exception.PlatformConfigurationException;
 import org.bonitasoft.platform.configuration.model.BonitaConfiguration;
 import org.bonitasoft.platform.configuration.model.FullBonitaConfiguration;
 import org.bonitasoft.platform.configuration.type.ConfigurationType;
@@ -42,6 +41,7 @@ import org.bonitasoft.platform.configuration.util.GetAllConfigurationInTransacti
 import org.bonitasoft.platform.configuration.util.GetConfigurationInTransaction;
 import org.bonitasoft.platform.configuration.util.LicensesResourceVisitor;
 import org.bonitasoft.platform.configuration.util.StoreConfigurationInTransaction;
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.setup.DataSourceLookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,19 +153,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void storeTenantConfiguration(File configurationRootFolder, long tenantId) throws PlatformConfigurationException {
+    public void storeTenantConfiguration(File configurationRootFolder, long tenantId) throws PlatformException {
         storeConfiguration(configurationRootFolder, TENANT_PORTAL, tenantId);
 
     }
 
     @Override
-    public void storePlatformConfiguration(File configurationRootFolder) throws PlatformConfigurationException {
+    public void storePlatformConfiguration(File configurationRootFolder) throws PlatformException {
         storeConfiguration(configurationRootFolder, PLATFORM_ENGINE, NON_TENANT_RESOURCE);
 
     }
 
     @Override
-    public void storeAllConfiguration(File configurationRootFolder) throws PlatformConfigurationException {
+    public void storeAllConfiguration(File configurationRootFolder) throws PlatformException {
         final Path path = configurationRootFolder.toPath();
         List<FullBonitaConfiguration> fullBonitaConfigurations = new ArrayList<>();
         AllConfigurationResourceVisitor allConfigurationResourceVisitor = new AllConfigurationResourceVisitor(fullBonitaConfigurations);
@@ -173,7 +173,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             Files.walkFileTree(path, allConfigurationResourceVisitor);
             transactionTemplate.execute(new CleanAndStoreAllConfigurationInTransaction(jdbcTemplate, dbVendor, fullBonitaConfigurations));
         } catch (IOException e) {
-            throw new PlatformConfigurationException(e);
+            throw new PlatformException(e);
         }
     }
 
@@ -205,7 +205,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void writeAllConfigurationToFolder(File folder) throws PlatformConfigurationException {
+    public void writeAllConfigurationToFolder(File folder) throws PlatformException {
         for (FullBonitaConfiguration fullBonitaConfiguration : getAllConfiguration()) {
             Path folderPath = folder.toPath();
             if (fullBonitaConfiguration.getTenantId() > 0) {
@@ -219,7 +219,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             try {
                 IOUtils.write(fullBonitaConfiguration.getResourceContent(), new FileOutputStream(confFile));
             } catch (IOException e) {
-                throw new PlatformConfigurationException(e);
+                throw new PlatformException(e);
             }
         }
     }
@@ -228,7 +228,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return transactionTemplate.execute(new GetAllConfigurationInTransaction(jdbcTemplate));
     }
 
-    private void storeConfiguration(File configurationRootFolder, ConfigurationType type, long tenantId) throws PlatformConfigurationException {
+    private void storeConfiguration(File configurationRootFolder, ConfigurationType type, long tenantId) throws PlatformException {
         final Path path = configurationRootFolder.toPath();
         List<BonitaConfiguration> bonitaConfigurations = new ArrayList<>();
         ConfigurationResourceVisitor configurationResourceVisitor = new ConfigurationResourceVisitor(bonitaConfigurations);
@@ -236,7 +236,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             Files.walkFileTree(path, configurationResourceVisitor);
             storeConfiguration(bonitaConfigurations, type, tenantId);
         } catch (IOException e) {
-            throw new PlatformConfigurationException(e);
+            throw new PlatformException(e);
         }
     }
 
@@ -267,7 +267,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public void storeLicenses(File licensesFolder) throws PlatformConfigurationException {
+    public void storeLicenses(File licensesFolder) throws PlatformException {
         final Path path = licensesFolder.toPath();
         List<BonitaConfiguration> bonitaConfigurations = new ArrayList<>();
         LicensesResourceVisitor licensesResourceVisitor = new LicensesResourceVisitor(bonitaConfigurations);
@@ -275,12 +275,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             Files.walkFileTree(path, licensesResourceVisitor);
             cleanAndStoreConfiguration(bonitaConfigurations, LICENSES, NON_TENANT_RESOURCE);
         } catch (IOException e) {
-            throw new PlatformConfigurationException(e);
+            throw new PlatformException(e);
         }
     }
 
     @Override
-    public List<BonitaConfiguration> getLicenses() throws PlatformConfigurationException {
+    public List<BonitaConfiguration> getLicenses() throws PlatformException {
         return getNonTenantResource(LICENSES);
     }
 

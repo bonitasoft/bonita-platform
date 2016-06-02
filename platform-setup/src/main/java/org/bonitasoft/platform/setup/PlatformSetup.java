@@ -27,10 +27,10 @@ import javax.sql.DataSource;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bonitasoft.platform.configuration.ConfigurationService;
-import org.bonitasoft.platform.configuration.exception.PlatformConfigurationException;
 import org.bonitasoft.platform.configuration.impl.ConfigurationServiceImpl;
 import org.bonitasoft.platform.configuration.model.BonitaConfiguration;
 import org.bonitasoft.platform.configuration.type.ConfigurationType;
+import org.bonitasoft.platform.exception.PlatformException;
 import org.bonitasoft.platform.version.VersionService;
 import org.bonitasoft.platform.version.impl.VersionServiceImpl;
 import org.slf4j.Logger;
@@ -99,9 +99,9 @@ public class PlatformSetup {
     /**
      * Entry point that create the tables and insert the default configuration
      *
-     * @throws PlatformSetupException
+     * @throws PlatformException
      */
-    public void init() throws PlatformSetupException {
+    public void init() throws PlatformException {
         initPlatformSetup();
         if (isPlatformAlreadyCreated()) {
             LOGGER.info("Platform is already created. Nothing to do.");
@@ -119,9 +119,9 @@ public class PlatformSetup {
         return scriptExecutor.isPlatformAlreadyCreated();
     }
 
-    private void push(Path folderToPush) throws PlatformSetupException {
+    private void push(Path folderToPush) throws PlatformException {
         if (!isPlatformAlreadyCreated()) {
-            throw new PlatformSetupException("Platform is not created. run platform setup before pushing configuration.");
+            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.");
         }
         clean();
         if (Files.isDirectory(folderToPush)) {
@@ -142,9 +142,9 @@ public class PlatformSetup {
     /**
      * push all configuration files and licenses
      *
-     * @throws PlatformSetupException
+     * @throws PlatformException
      */
-    public void push() throws PlatformSetupException, PlatformConfigurationException {
+    public void push() throws PlatformException {
         initPlatformSetup();
         checkPlatformVersion();
         push(currentConfigurationFolder);
@@ -157,9 +157,9 @@ public class PlatformSetup {
      * available values
      * For tenant specific files, a tenants/[TENANT_ID] folder is created prior to configuration type
      *
-     * @throws PlatformSetupException
+     * @throws PlatformException
      */
-    void pull() throws PlatformConfigurationException, PlatformSetupException {
+    void pull() throws PlatformException {
         initPlatformSetup();
         LOGGER.info("Pulling configuration into folder " + currentConfigurationFolder);
         pull(this.currentConfigurationFolder);
@@ -167,7 +167,7 @@ public class PlatformSetup {
                 + ". You can now edit the configuration files and push the changes to update the platform");
     }
 
-    public void pull(Path destinationFolder) throws PlatformConfigurationException, PlatformSetupException {
+    public void pull(Path destinationFolder) throws PlatformException {
         checkPlatformVersion();
         try {
             if (Files.exists(destinationFolder)) {
@@ -176,13 +176,13 @@ public class PlatformSetup {
             Files.createDirectories(destinationFolder);
             configurationService.writeAllConfigurationToFolder(destinationFolder.toFile());
         } catch (IOException e) {
-            throw new PlatformConfigurationException(e);
+            throw new PlatformException(e);
         }
     }
 
-    private void checkPlatformVersion() throws PlatformSetupException {
+    private void checkPlatformVersion() throws PlatformException {
         if (!versionService.isValidPlatformVersion()) {
-            throw new PlatformSetupException(new StringBuilder().append("Platform version [").append(versionService.getPlatformVersion())
+            throw new PlatformException(new StringBuilder().append("Platform version [").append(versionService.getPlatformVersion())
                     .append("] is not supported by current platform setup version [").append(versionService.getPlatformSetupVersion()).append("]").toString());
         }
     }
@@ -190,22 +190,18 @@ public class PlatformSetup {
     /**
      * lookup for license file and push them to database
      *
-     * @throws PlatformSetupException
+     * @throws PlatformException
      */
-    private void pushLicenses() throws PlatformSetupException {
+    private void pushLicenses() throws PlatformException {
         LOGGER.info("Pushing license files using license folder:" + licensesFolder.toString());
         if (Files.isDirectory(licensesFolder)) {
-            try {
-                configurationService.storeLicenses(licensesFolder.toFile());
-            } catch (PlatformConfigurationException e) {
-                throw new PlatformSetupException(e);
-            }
+            configurationService.storeLicenses(licensesFolder.toFile());
         } else {
             LOGGER.info("Folder does not exists, no licenses pushed");
         }
     }
 
-    private void initializePlatform() throws PlatformSetupException {
+    private void initializePlatform() throws PlatformException {
         scriptExecutor.createAndInitializePlatformIfNecessary();
     }
 
@@ -230,16 +226,12 @@ public class PlatformSetup {
         licensesFolder = platformConfFolder.resolve("licenses");
     }
 
-    private void pushConfigurationFromSetupFolder(Path folderToPush) throws PlatformSetupException {
-        try {
-            configurationService.storeAllConfiguration(folderToPush.toFile());
-        } catch (PlatformConfigurationException e) {
-            throw new PlatformSetupException(e);
-        }
+    private void pushConfigurationFromSetupFolder(Path folderToPush) throws PlatformException {
+        configurationService.storeAllConfiguration(folderToPush.toFile());
 
     }
 
-    private void pushConfigurationFromClassPath() throws PlatformSetupException {
+    private void pushConfigurationFromClassPath() throws PlatformException {
         try {
             List<BonitaConfiguration> platformInitConfigurations = new ArrayList<>();
             addIfExists(platformInitConfigurations, ConfigurationType.PLATFORM_INIT_ENGINE, "bonita-platform-init-community-custom.properties");
@@ -308,7 +300,7 @@ public class PlatformSetup {
             configurationService.storePlatformPortalConf(portalPlatform);
 
         } catch (IOException e) {
-            throw new PlatformSetupException(e);
+            throw new PlatformException(e);
         }
     }
 
@@ -320,7 +312,7 @@ public class PlatformSetup {
         }
     }
 
-    private void initServices() throws PlatformSetupException {
+    private void initServices() throws PlatformException {
         if (scriptExecutor == null) {
             scriptExecutor = new ScriptExecutor(dbVendor, dataSource);
         }
@@ -333,13 +325,13 @@ public class PlatformSetup {
         }
     }
 
-    private void initDataSource() throws PlatformSetupException {
+    private void initDataSource() throws PlatformException {
         try {
             if (dataSource == null) {
                 dataSource = new DataSourceLookup().lookup();
             }
         } catch (NamingException e) {
-            throw new PlatformSetupException(e);
+            throw new PlatformException(e);
         }
     }
 
@@ -353,14 +345,14 @@ public class PlatformSetup {
         }
     }
 
-    public void destroy() throws PlatformSetupException {
+    public void destroy() throws PlatformException {
         initPlatformSetup();
         if (isPlatformAlreadyCreated()) {
             scriptExecutor.deleteTables();
         }
     }
 
-    public void initPlatformSetup() throws PlatformSetupException {
+    public void initPlatformSetup() throws PlatformException {
         initProperties();
         initDataSource();
         initServices();

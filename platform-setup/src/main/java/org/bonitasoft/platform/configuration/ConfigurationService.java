@@ -17,8 +17,8 @@ package org.bonitasoft.platform.configuration;
 import java.io.File;
 import java.util.List;
 
-import org.bonitasoft.platform.configuration.exception.PlatformConfigurationException;
 import org.bonitasoft.platform.configuration.model.BonitaConfiguration;
+import org.bonitasoft.platform.exception.PlatformException;
 
 /**
  * Give access to Bonita BPM Platform configuration.
@@ -162,31 +162,31 @@ public interface ConfigurationService {
      */
     List<BonitaConfiguration> getTenantPortalConf(long tenantId);
 
-     /**
+    /**
      * Read configuration files located under configuration root folder
      * each file is stored in database
      *
      * @param configurationRootFolder root folder containing configuration files
      * @param tenantId tenant key
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    void storeTenantConfiguration(File configurationRootFolder, long tenantId) throws PlatformConfigurationException;
+    void storeTenantConfiguration(File configurationRootFolder, long tenantId) throws PlatformException;
 
     /**
      * store platform configuration files for engine
      *
      * @param configurationRootFolder root folder containing configuration files
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    void storePlatformConfiguration(File configurationRootFolder) throws PlatformConfigurationException;
+    void storePlatformConfiguration(File configurationRootFolder) throws PlatformException;
 
     /**
      * store whole configuration files for engine and portal, excluding licenses files
      *
      * @param configurationRootFolder list of files
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    void storeAllConfiguration(File configurationRootFolder) throws PlatformConfigurationException;
+    void storeAllConfiguration(File configurationRootFolder) throws PlatformException;
 
     /**
      * write all configuration files
@@ -200,9 +200,9 @@ public interface ConfigurationService {
      * └── tenant_template_security_scripts
      *
      * @param folder
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    void writeAllConfigurationToFolder(File folder) throws PlatformConfigurationException;
+    void writeAllConfigurationToFolder(File folder) throws PlatformException;
 
     /**
      * read licensesFolder for license files
@@ -210,18 +210,17 @@ public interface ConfigurationService {
      * each *.lic file is stored in database
      *
      * @param licensesFolder
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    void storeLicenses(File licensesFolder) throws PlatformConfigurationException;
+    void storeLicenses(File licensesFolder) throws PlatformException;
 
     /**
      * Retrieves all license files stored in database.
      *
      * @return a list of BonitaConfiguration that represents each license file
-     * @throws PlatformConfigurationException
+     * @throws PlatformException
      */
-    List<BonitaConfiguration> getLicenses() throws PlatformConfigurationException;
-
+    List<BonitaConfiguration> getLicenses() throws PlatformException;
 
     /**
      * Delete all configuration files for a tenant
@@ -233,7 +232,6 @@ public interface ConfigurationService {
 
     /**
      * Delete all configuration and license files
-     *
      */
     void deleteAllConfiguration();
 }
