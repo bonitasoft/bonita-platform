@@ -83,7 +83,7 @@ public class VersionServiceImpl implements VersionService {
     public String getPlatformSetupVersion() {
         String version = null;
         try {
-            version = IOUtils.toString(this.getClass().getResource("/VERSION"));
+            version = IOUtils.toString(this.getClass().getResource("/PLATFORM_ENGINE_VERSION"));
         } catch (IOException e) {
             LOGGER.error("unable to read version.");
         }
