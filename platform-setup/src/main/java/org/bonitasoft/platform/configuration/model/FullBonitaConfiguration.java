@@ -16,6 +16,8 @@ package org.bonitasoft.platform.configuration.model;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.bonitasoft.platform.configuration.type.ConfigurationType;
+
 /**
  * @author Laurent Leseigneur
  */
@@ -63,5 +65,13 @@ public class FullBonitaConfiguration extends BonitaConfiguration {
                 getResourceName(),
                 getConfigurationType(),
                 getTenantId());
+    }
+
+    public boolean isLicenseFile() {
+        return getConfigurationType().equals(ConfigurationType.LICENSES.name());
+    }
+
+    public boolean isTenantFile() {
+        return getTenantId() > 0;
     }
 }

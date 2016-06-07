@@ -171,8 +171,9 @@ public class ConfigurationServiceImplIT {
 
         //when
         final File destFolder = temporaryFolder.newFolder();
+        final File licFolder = temporaryFolder.newFolder();
 
-        configurationService.writeAllConfigurationToFolder(destFolder);
+        configurationService.writeAllConfigurationToFolder(destFolder, licFolder);
 
         //then
         assertThat(destFolder).as("should retrieve config files")
@@ -215,7 +216,7 @@ public class ConfigurationServiceImplIT {
     }
 
     @Test
-    public void should_delete_tenant_configuration(){
+    public void should_delete_tenant_configuration() {
         //given
         storeTenantConfiguration(TENANT_ID_5);
         storeTenantConfiguration(TENANT_ID_12);

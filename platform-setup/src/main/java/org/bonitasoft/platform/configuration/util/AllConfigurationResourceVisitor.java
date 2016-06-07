@@ -13,15 +13,7 @@
  **/
 package org.bonitasoft.platform.configuration.util;
 
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.PLATFORM_ENGINE;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.PLATFORM_INIT_ENGINE;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.PLATFORM_PORTAL;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_ENGINE;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_PORTAL;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_SECURITY_SCRIPTS;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_TEMPLATE_ENGINE;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_TEMPLATE_PORTAL;
-import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_TEMPLATE_SECURITY_SCRIPTS;
+import static org.bonitasoft.platform.configuration.type.ConfigurationType.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,7 +87,7 @@ public class AllConfigurationResourceVisitor extends SimpleFileVisitor<Path> {
             final Long tenantId = getTenantId(path.getParent());
             final String configurationType = getFolderName(path.getParent());
             try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                LOGGER.info(buildMessage(file, tenantId, configurationType));
+                LOGGER.debug(buildMessage(file, tenantId, configurationType));
                 fullBonitaConfigurations.add(new FullBonitaConfiguration(file.getName(), IOUtils.toByteArray(fileInputStream), configurationType, tenantId));
             }
         }

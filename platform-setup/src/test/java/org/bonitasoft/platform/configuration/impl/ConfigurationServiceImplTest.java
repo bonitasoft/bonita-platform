@@ -97,21 +97,22 @@ public class ConfigurationServiceImplTest {
     @Test
     public void should_write_file_within_sub_folder() throws Exception {
         //given
-        final File folder = temporaryFolder.newFolder("conf");
+        final File configFolder = temporaryFolder.newFolder("conf");
+        final File licFolder = temporaryFolder.newFolder("lic");
         List<FullBonitaConfiguration> confs = new ArrayList<>();
         confs.add(new FullBonitaConfiguration("conf1.properties", "content 1".getBytes(), "PLATFORM_TYPE", 0L));
         confs.add(new FullBonitaConfiguration("conf2.properties", "content 2".getBytes(), "TENANT_TYPE", 5L));
 
         doReturn(confs).when(configurationService).getAllConfiguration();
-        doCallRealMethod().when(configurationService).writeAllConfigurationToFolder(folder);
+        doCallRealMethod().when(configurationService).writeAllConfigurationToFolder(configFolder, licFolder);
 
         //when
-        configurationService.writeAllConfigurationToFolder(folder);
+        configurationService.writeAllConfigurationToFolder(configFolder, licFolder);
 
         // then
-        assertThat(folder.toPath().resolve("platform_type").resolve("conf1.properties").toFile())
+        assertThat(configFolder.toPath().resolve("platform_type").resolve("conf1.properties").toFile())
                 .as("should lowercase configuration type").exists();
-        assertThat(folder.toPath().resolve("tenants").resolve("5").resolve("tenant_type").resolve("conf2.properties").toFile())
+        assertThat(configFolder.toPath().resolve("tenants").resolve("5").resolve("tenant_type").resolve("conf2.properties").toFile())
                 .as("should create sub folder with tenantId").exists();
 
     }

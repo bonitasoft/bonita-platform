@@ -2,7 +2,7 @@
 
 mvn clean install -DskipTests -f ../pom.xml
 
-export VERSION=`cat ../platform-setup/target/classes/VERSION`
+export VERSION=`cat ../platform-setup/target/classes/PLATFORM_ENGINE_VERSION`
 
 echo "========================================"
 echo "version:${VERSION}"

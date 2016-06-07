@@ -199,10 +199,11 @@ public interface ConfigurationService {
      * ├── tenant_template_portal
      * └── tenant_template_security_scripts
      *
-     * @param folder
+     * @param configurationFolder
+     * @param licenseFolder
      * @throws PlatformException
      */
-    void writeAllConfigurationToFolder(File folder) throws PlatformException;
+    void writeAllConfigurationToFolder(File configurationFolder, File licenseFolder) throws PlatformException;
 
     /**
      * read licensesFolder for license files

@@ -110,7 +110,7 @@ public class PlatformSetup {
             initializePlatform();
             LOGGER.info("Platform created.");
             push(initialConfigurationFolder);
-            LOGGER.info("Initial configuration successfully pushed to database from folder " + initialConfigurationFolder);
+            LOGGER.info("Initial configuration (and license) files successfully pushed to database");
         }
 
     }
@@ -148,7 +148,7 @@ public class PlatformSetup {
         initPlatformSetup();
         checkPlatformVersion();
         push(currentConfigurationFolder);
-        LOGGER.info("New configuration successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
+        LOGGER.info("Configuration (and license) files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
     }
 
     /**
@@ -161,22 +161,28 @@ public class PlatformSetup {
      */
     void pull() throws PlatformException {
         initPlatformSetup();
-        LOGGER.info("Pulling configuration into folder " + currentConfigurationFolder);
-        pull(this.currentConfigurationFolder);
-        LOGGER.info("Configuration successfully pulled into folder " + currentConfigurationFolder
-                + ". You can now edit the configuration files and push the changes to update the platform");
+        LOGGER.info("Pulling configuration into folder: " + currentConfigurationFolder);
+        LOGGER.info("Pulling licenses into folder: " + licensesFolder);
+        pull(currentConfigurationFolder, licensesFolder);
+        LOGGER.info("Configuration (and license) files successfully pulled. You can now edit them. Use \"setup push\" when done");
     }
 
-    public void pull(Path destinationFolder) throws PlatformException {
+    public void pull(Path configurationFolder, Path licensesFolder) throws PlatformException {
         checkPlatformVersion();
         try {
-            if (Files.exists(destinationFolder)) {
-                FileUtils.deleteDirectory(destinationFolder.toFile());
-            }
-            Files.createDirectories(destinationFolder);
-            configurationService.writeAllConfigurationToFolder(destinationFolder.toFile());
+            recreateDirectory(configurationFolder, licensesFolder);
+            configurationService.writeAllConfigurationToFolder(configurationFolder.toFile(), licensesFolder.toFile());
         } catch (IOException e) {
             throw new PlatformException(e);
+        }
+    }
+
+    private void recreateDirectory(Path... folders) throws IOException {
+        for (Path folder : folders) {
+            if (Files.exists(folder)) {
+                FileUtils.deleteDirectory(folder.toFile());
+            }
+            Files.createDirectories(folder);
         }
     }
 
@@ -193,11 +199,11 @@ public class PlatformSetup {
      * @throws PlatformException
      */
     private void pushLicenses() throws PlatformException {
-        LOGGER.info("Pushing license files using license folder:" + licensesFolder.toString());
+        LOGGER.info("Pushing license files from folder:" + licensesFolder.toString());
         if (Files.isDirectory(licensesFolder)) {
             configurationService.storeLicenses(licensesFolder.toFile());
         } else {
-            LOGGER.info("Folder does not exists, no licenses pushed");
+            LOGGER.warn("Folder does not exists, no licenses pushed");
         }
     }
 

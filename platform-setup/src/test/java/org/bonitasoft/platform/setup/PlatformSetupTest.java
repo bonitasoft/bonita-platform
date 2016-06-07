@@ -268,7 +268,7 @@ public class PlatformSetupTest {
         assertThat(log).as("should create platform and log message").contains("Platform created.");
         assertThat(split[split.length - 1]).as("should push Initial configuration and log message")
                 .contains("INFO")
-                .endsWith("Initial configuration successfully pushed to database from folder platform_conf" + File.separator + "initial");
+                .endsWith("Initial configuration (and license) files successfully pushed to database");
     }
 
     @Test
@@ -306,7 +306,7 @@ public class PlatformSetupTest {
 
         // then
         assertThat(split[split.length - 1]).as("should push new configuration and log message").contains("INFO")
-                .endsWith("New configuration successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
+                .endsWith("Configuration (and license) files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
     }
 
     @Test
@@ -326,6 +326,7 @@ public class PlatformSetupTest {
     public void clean_method_should_delete_and_log() throws Exception {
         //given
         final Path path = temporaryFolder.newFolder("afterClean").toPath();
+        final Path licensePath = temporaryFolder.newFolder("licenses").toPath();
         platformSetup.init();
 
         //when
@@ -339,9 +340,12 @@ public class PlatformSetupTest {
         assertThat(split[split.length - 1]).as("should log message").contains("INFO")
                 .endsWith("Delete all configuration.");
 
-        platformSetup.pull(path);
+        platformSetup.pull(path, licensePath);
         List<FullBonitaConfiguration> configurations = new ArrayList<>();
         Files.walkFileTree(path, new AllConfigurationResourceVisitor(configurations));
+        assertThat(configurations).as("should remove all files").isEmpty();
+
+        Files.walkFileTree(licensePath, new AllConfigurationResourceVisitor(configurations));
         assertThat(configurations).as("should remove all files").isEmpty();
     }
 
@@ -352,6 +356,7 @@ public class PlatformSetupTest {
         final Path initPath = temporaryFolder.newFolder("init").toPath();
         final Path pushPath = temporaryFolder.newFolder("push").toPath();
         final Path checkPath = temporaryFolder.newFolder("check").toPath();
+        final Path licensesPath = temporaryFolder.newFolder("lic").toPath();
 
         FileUtils.writeByteArrayToFile(
                 initPath.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve(PLATFORM_ENGINE.name().toLowerCase()).resolve("initial.properties")
@@ -372,7 +377,7 @@ public class PlatformSetupTest {
         platformSetup.push();
 
         //then
-        platformSetup.pull(checkPath);
+        platformSetup.pull(checkPath, licensesPath);
         Files.walkFileTree(checkPath, new AllConfigurationResourceVisitor(configurations));
         assertThat(configurations).as("should remove all files").hasSize(1)
                 .extracting("resourceName").containsOnly("current.properties");
@@ -409,7 +414,9 @@ public class PlatformSetupTest {
 
         //when
         final Path destFolder = temporaryFolder.newFolder("destFolder").toPath();
-        platformSetup.pull(destFolder);
+        final Path licFolder = temporaryFolder.newFolder("licenses").toPath();
+        platformSetup.pull(destFolder, licFolder);
 
     }
+
 }
