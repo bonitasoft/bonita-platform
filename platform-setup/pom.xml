@@ -128,6 +128,7 @@
                         </goals>
                         <configuration>
                             <finalName>Bonita-BPM-platform-setup-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
                             </descriptors>
