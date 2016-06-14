@@ -8,6 +8,14 @@ CFG_FOLDER=${BASEDIR}/platform_conf
 INITIAL_CFG_FOLDER=$CFG_FOLDER/initial
 LIB_FOLDER=${BASEDIR}/lib
 
+testReturnCode() {
+  COD_RET=$1
+  if [ ${COD_RET} -ne 0 ]; then
+    echo "ERROR $1 $2"
+    exit ${COD_RET}
+  fi
+}
+
 check_is_installed() {
 	command -v $1 >/dev/null 2>&1 || {
                 # command $1 not present:
@@ -32,11 +40,13 @@ if [ "${ACTION}" != "init" -a "${ACTION}" != "pull" -a "${ACTION}" != "push"  ];
     exit 1
 fi
 
-echo "using database ${BONITA_DATABASE}"
-echo "action is ${ACTION}"
+echo "Using database ${BONITA_DATABASE}"
+echo "Action is ${ACTION}"
 export BONITA_DATABASE
 
 java -cp "${BASEDIR}:${CFG_FOLDER}:${INITIAL_CFG_FOLDER}:${LIB_FOLDER}/*" -Dorg.bonitasoft.platform.setup.action=${ACTION} -Dspring.profiles.active=default -Dsysprop.bonita.db.vendor=${BONITA_DATABASE} org.bonitasoft.platform.setup.PlatformSetupApplication
+
+testReturnCode $? "Executing platform setup (Java command)"
 
 if [ "${ACTION}" = "pull" ]; then
     check_is_installed tree

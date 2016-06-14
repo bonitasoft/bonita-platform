@@ -18,6 +18,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +108,6 @@ public class PlatformSetup {
         initPlatformSetup();
         if (isPlatformAlreadyCreated()) {
             LOGGER.info("Platform is already created. Nothing to do.");
-            return;
         } else {
             initializePlatform();
             LOGGER.info("Platform created.");
@@ -336,7 +338,11 @@ public class PlatformSetup {
             if (dataSource == null) {
                 dataSource = new DataSourceLookup().lookup();
             }
-        } catch (NamingException e) {
+            try (Connection connection = dataSource.getConnection()) {
+                DatabaseMetaData metaData = connection.getMetaData();
+                LOGGER.info("Connected to '" + dbVendor + "' database with url: '" + metaData.getURL() + "' with user: '" + metaData.getUserName() + "'");
+            }
+        } catch (NamingException | SQLException e) {
             throw new PlatformException(e);
         }
     }
@@ -358,7 +364,7 @@ public class PlatformSetup {
         }
     }
 
-    public void initPlatformSetup() throws PlatformException {
+    private void initPlatformSetup() throws PlatformException {
         initProperties();
         initDataSource();
         initServices();

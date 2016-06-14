@@ -1,5 +1,13 @@
 #!/bin/sh
 
+testReturnCode() {
+  COD_RET=$1
+  if [ ${COD_RET} -ne 0 ]; then
+    echo "ERROR $1 $2"
+    exit ${COD_RET}
+  fi
+}
+
 mvn clean install -DskipTests -f ../pom.xml
 
 export VERSION=`cat ../platform-setup/target/classes/PLATFORM_ENGINE_VERSION`
@@ -34,6 +42,7 @@ echo "should store to database "
 echo "========================================"
 ${E2E_DIR}/setup.sh init
 
+testReturnCode $? "setup.sh init"
 
 echo "========================================"
 echo "check tables"

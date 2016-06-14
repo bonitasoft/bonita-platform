@@ -190,6 +190,7 @@ public class ScriptExecutor {
         populate.addScript(sqlResource);
         populate.setSeparator(getSeparator());
         populate.execute(datasource);
+        logger.info("Executed SQL script " + sqlResource.getURL().getFile());
     }
 
     private String getSeparator() {

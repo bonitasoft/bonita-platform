@@ -46,25 +46,27 @@ public class PlatformSetupApplication {
         try {
             final String action = System.getProperty(PlatformSetup.BONITA_SETUP_ACTION);
 
-            if (action == null) {
+            if (action != null) {
+                switch (action) {
+                    case ACTION_INIT:
+                        init(getConfigurableApplicationContext(args));
+                        break;
+                    case ACTION_PUSH:
+                        push(getConfigurableApplicationContext(args));
+                        break;
+                    case ACTION_PULL:
+                        pull(getConfigurableApplicationContext(args));
+                        break;
+                    default:
+                        displayMessageAndExit(action);
+                }
+            } else {
                 displayMessageAndExit("null");
             }
-
-            switch (action) {
-                case ACTION_INIT:
-                    init(getConfigurableApplicationContext(args));
-                    break;
-                case ACTION_PUSH:
-                    push(getConfigurableApplicationContext(args));
-                    break;
-                case ACTION_PULL:
-                    pull(getConfigurableApplicationContext(args));
-                    break;
-                default:
-                    displayMessageAndExit(action);
-            }
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.error(e.getMessage());
+            // Exit code allows the calling script to catch an invalid execution:
+            System.exit(1);
         }
     }
 

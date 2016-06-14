@@ -17,6 +17,8 @@
     <logger name="org.springframework.jdbc" level="INFO" />
     <logger name="org.springframework.jdbc.support" level="WARN" />
 
+    <logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="OFF" />
+
 
     <root level="WARN">
         <appender-ref ref="STDOUT" />
