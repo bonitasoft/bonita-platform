@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -30,6 +31,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.OS;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  * @author Baptiste Mesta
@@ -97,11 +99,19 @@ public class PlatformSetupTestUtils {
         }
     }
 
-    public static Connection getJdbcConnection(File distFolder) throws SQLException {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:h2:" + distFolder.getAbsolutePath() + "/../database/bonita_journal.db",
-                "sa", "");
+    public static Connection getJdbcConnection(File distFolder) throws Exception {
+        Properties properties = getDatabaseProperties(distFolder);
+        properties.put("h2.database.dir", distFolder.toPath().resolve(properties.getProperty("h2.database.dir")).toString());
+        StrSubstitutor strSubstitutor = new StrSubstitutor(new HashMap(properties));
+        Connection conn = DriverManager.getConnection(strSubstitutor.replace(properties.getProperty("h2.url")),
+                properties.getProperty("db.user"), properties.getProperty("db.password"));
         return conn;
+    }
+
+    private static Properties getDatabaseProperties(File distFolder) throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream(distFolder.toPath().resolve("database.properties").toFile()));
+        return properties;
     }
 
     public static DefaultExecutor createExecutor(File distFolder) {
