@@ -20,6 +20,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <assertj-assertions-generator-maven-plugin.version>2.0.0</assertj-assertions-generator-maven-plugin.version>
+        <commons-io.version>2.5</commons-io.version>
+        <xmlunit.version>1.5</xmlunit.version>
     </properties>
     <dependencyManagement>
 
@@ -27,7 +29,7 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.1</version>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -87,7 +89,12 @@
             </dependency>
 
             <!-- TEST -->
-
+            <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>${xmlunit.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
