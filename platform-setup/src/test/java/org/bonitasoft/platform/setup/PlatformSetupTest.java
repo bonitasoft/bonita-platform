@@ -413,9 +413,9 @@ public class PlatformSetupTest {
                 "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
 
         //when
-        final Path destFolder = temporaryFolder.newFolder("destFolder").toPath();
+        final Path destinationFolder = temporaryFolder.newFolder("destinationFolder").toPath();
         final Path licFolder = temporaryFolder.newFolder("licenses").toPath();
-        platformSetup.pull(destFolder, licFolder);
+        platformSetup.pull(destinationFolder, licFolder);
 
     }
 

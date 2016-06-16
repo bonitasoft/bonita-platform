@@ -70,7 +70,8 @@ public class PlatformSetupApplication {
         }
     }
 
-    private static ConfigurableApplicationContext getConfigurableApplicationContext(String[] args) {
+    private static ConfigurableApplicationContext getConfigurableApplicationContext(String[] args) throws PlatformException {
+        new ConfigurationChecker().validate();
         return SpringApplication.run(PlatformSetupApplication.class, args);
     }
 

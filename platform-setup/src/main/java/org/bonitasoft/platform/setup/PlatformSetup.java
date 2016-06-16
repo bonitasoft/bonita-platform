@@ -190,8 +190,8 @@ public class PlatformSetup {
 
     private void checkPlatformVersion() throws PlatformException {
         if (!versionService.isValidPlatformVersion()) {
-            throw new PlatformException(new StringBuilder().append("Platform version [").append(versionService.getPlatformVersion())
-                    .append("] is not supported by current platform setup version [").append(versionService.getPlatformSetupVersion()).append("]").toString());
+            throw new PlatformException("Platform version [" + versionService.getPlatformVersion() +
+                    "] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
         }
     }
 

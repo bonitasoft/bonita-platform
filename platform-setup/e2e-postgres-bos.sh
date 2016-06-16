@@ -19,7 +19,6 @@ export E2E_DIR="target/e2e-postgres-bos"
 export ZIP=Bonita-BPM-platform-setup-${VERSION}.zip
 
 unzip -q -d ${E2E_DIR} target/${ZIP}
-cp src/main/standalone/logback.xml ${E2E_DIR}/platform_conf
 
 echo "========================================"
 echo "clean all tables"
@@ -32,7 +31,7 @@ echo "configure postgres"
 sed -i s/db.vendor=h2/db.vendor=postgres/g ${E2E_DIR}/database.properties
 sed -i s/db.user=.*/db.user=bonita/g ${E2E_DIR}/database.properties
 sed -i s/db.password=.*/db.password=bpm/g ${E2E_DIR}/database.properties
-sed -i s/db.server.port=.*/db.server.port=5432/g ${E2E_DIR}/database.properties
+sed -i s/#db.server.port=.*/db.server.port=5432/g ${E2E_DIR}/database.properties
 sed -i s/db.database.name=.*/db.database.name=bonita/g ${E2E_DIR}/database.properties
 cat ${E2E_DIR}/database.properties
 echo "========================================"
@@ -163,7 +162,18 @@ echo "should contain only bonita-platform-custom.xml:"
 tree ${E2E_DIR}/platform_conf/current
 echo "========================================"
 
+echo "========================================"
+echo "should fail if driver class cannot be loaded:"
+echo "========================================"
+sed -i s/^postgres.driverClassName=.*$/postgres.driverClassName=org.UnknownClass/g ${E2E_DIR}/database.properties
+${E2E_DIR}/setup.sh push
 
+echo "========================================"
+echo "should fail if drivers not found:"
+echo "========================================"
+sed -i s/^postgres.driverClassName=org.UnknownClass*$/postgres.driverClassName=org.postgresql.Driver/g ${E2E_DIR}/database.properties
+rm ${E2E_DIR}/lib/postgres*.jar
+${E2E_DIR}/setup.sh push
 
 echo "========================================"
 echo "end."

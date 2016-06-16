@@ -24,8 +24,6 @@ check_is_installed() {
           }
 }
 
-# JAVA_OPTS="-Xss128m"
-
 BONITA_DATABASE=$( grep '^db.vendor=' database.properties | sed -e 's/db.vendor=//g' )
 
 if [ "$BONITA_DATABASE" != "h2" -a "$BONITA_DATABASE" != "postgres" -a "$BONITA_DATABASE" != "sqlserver" -a "$BONITA_DATABASE" != "oracle" -a "$BONITA_DATABASE" != "mysql"  ]; then
@@ -40,8 +38,8 @@ if [ "${ACTION}" != "init" -a "${ACTION}" != "pull" -a "${ACTION}" != "push"  ];
     exit 1
 fi
 
-echo "Using database ${BONITA_DATABASE}"
 echo "Action is ${ACTION}"
+echo "Using database ${BONITA_DATABASE}"
 export BONITA_DATABASE
 
 java -cp "${BASEDIR}:${CFG_FOLDER}:${INITIAL_CFG_FOLDER}:${LIB_FOLDER}/*" -Dorg.bonitasoft.platform.setup.action=${ACTION} -Dspring.profiles.active=default -Dsysprop.bonita.db.vendor=${BONITA_DATABASE} org.bonitasoft.platform.setup.PlatformSetupApplication
