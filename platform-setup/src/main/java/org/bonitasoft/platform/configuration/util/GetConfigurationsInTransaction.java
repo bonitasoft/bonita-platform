@@ -27,36 +27,31 @@ import org.springframework.transaction.support.TransactionCallback;
 /**
  * @author Laurent Leseigneur
  */
-public class GetConfigurationInTransaction implements TransactionCallback<BonitaConfiguration> {
+public class GetConfigurationsInTransaction implements TransactionCallback<List<BonitaConfiguration>> {
 
     private final JdbcTemplate jdbcTemplate;
     private final long tenantId;
     private final ConfigurationType type;
-    private final String resourceName;
 
     private final static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
-    public GetConfigurationInTransaction(JdbcTemplate jdbcTemplate, long tenantId, ConfigurationType type, String resourceName) {
+    public GetConfigurationsInTransaction(JdbcTemplate jdbcTemplate, long tenantId, ConfigurationType type) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantId = tenantId;
         this.type = type;
-        this.resourceName = resourceName;
     }
 
     @Override
-    public BonitaConfiguration doInTransaction(TransactionStatus status) {
-        LOGGER.debug("get configurations for type:" + type.name() + " resource:" + resourceName + " and tenant id:" + tenantId);
+    public List<BonitaConfiguration> doInTransaction(TransactionStatus status) {
+        LOGGER.debug("get configurations for type:" + type.name() + " and tenant id:" + tenantId);
 
         final List<BonitaConfiguration> bonitaConfigurations = jdbcTemplate.query(
-                BonitaConfigurationRowMapper.SELECT_CONFIGURATION,
-                new Object[] { tenantId, type.name(), resourceName },
+                BonitaConfigurationRowMapper.SELECT_CONFIGURATION_FOR_TYPE,
+                new Object[] { tenantId, type.name() },
                 new BonitaConfigurationRowMapper());
 
         LOGGER.debug("configurations found:" + bonitaConfigurations.toString());
 
-        if (bonitaConfigurations.size() == 1) {
-            return bonitaConfigurations.get(0);
-        }
-        return null;
+        return bonitaConfigurations;
     }
 }

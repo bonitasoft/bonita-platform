@@ -39,6 +39,7 @@ import org.bonitasoft.platform.configuration.util.DeleteAllConfigurationInTransa
 import org.bonitasoft.platform.configuration.util.DeleteTenantConfigurationInTransaction;
 import org.bonitasoft.platform.configuration.util.GetAllConfigurationInTransaction;
 import org.bonitasoft.platform.configuration.util.GetConfigurationInTransaction;
+import org.bonitasoft.platform.configuration.util.GetConfigurationsInTransaction;
 import org.bonitasoft.platform.configuration.util.LicensesResourceVisitor;
 import org.bonitasoft.platform.configuration.util.StoreConfigurationInTransaction;
 import org.bonitasoft.platform.exception.PlatformException;
@@ -205,6 +206,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public BonitaConfiguration getTenantPortalAutoLoginConf(long tenantId) {
+        return getBonitaConfiguration(ConfigurationType.TENANT_PORTAL, tenantId, "autologin-v6.json");
+    }
+
+    @Override
     public void writeAllConfigurationToFolder(File configurationFolder, File licenseFolder) throws PlatformException {
         FolderResolver folderResolver = new FolderResolver(configurationFolder.toPath(), licenseFolder.toPath());
 
@@ -252,13 +258,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return getBonitaConfigurations(TENANT_ENGINE, tenantId);
     }
 
+    private List<BonitaConfiguration> getBonitaConfigurations(ConfigurationType type, long tenantId) {
+        return transactionTemplate.execute(new GetConfigurationsInTransaction(jdbcTemplate, tenantId, type));
+    }
+
     @Override
     public List<BonitaConfiguration> getTenantSecurityScripts(long tenantId) {
         return getBonitaConfigurations(ConfigurationType.TENANT_SECURITY_SCRIPTS, tenantId);
     }
 
-    private List<BonitaConfiguration> getBonitaConfigurations(ConfigurationType type, long tenantId) {
-        return transactionTemplate.execute(new GetConfigurationInTransaction(jdbcTemplate, tenantId, type));
+    private BonitaConfiguration getBonitaConfiguration(ConfigurationType type, long tenantId, String resourceName) {
+        return transactionTemplate.execute(new GetConfigurationInTransaction(jdbcTemplate, tenantId, type, resourceName));
     }
 
     @Override

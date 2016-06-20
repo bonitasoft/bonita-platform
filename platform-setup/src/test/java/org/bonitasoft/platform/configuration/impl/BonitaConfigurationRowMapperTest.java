@@ -1,9 +1,6 @@
 package org.bonitasoft.platform.configuration.impl;
 
-import static org.bonitasoft.platform.configuration.impl.BonitaConfigurationRowMapper.RESOURCE_CONTENT;
-import static org.bonitasoft.platform.configuration.impl.BonitaConfigurationRowMapper.RESOURCE_NAME;
-import static org.bonitasoft.platform.configuration.impl.BonitaConfigurationRowMapper.TENANT_ID;
-import static org.bonitasoft.platform.configuration.impl.BonitaConfigurationRowMapper.CONTENT_TYPE;
+import static org.bonitasoft.platform.configuration.impl.ConfigurationFields.*;
 import static org.mockito.Mockito.doReturn;
 
 import java.sql.ResultSet;
@@ -27,7 +24,7 @@ public class BonitaConfigurationRowMapperTest {
 
     @Before
     public void setup() throws Exception {
-        doReturn(1L). when( rs).getLong(TENANT_ID);
+        doReturn(1L).when(rs).getLong(TENANT_ID);
         doReturn("my resource").when(rs).getString(RESOURCE_NAME);
         doReturn("PLATFORM_PORTAL").when(rs).getString(CONTENT_TYPE);
         doReturn("my content".getBytes()).when(rs).getBytes(RESOURCE_CONTENT);

@@ -58,7 +58,7 @@ public class PlatformSetupDistributionIT {
         Statement statement = jdbcConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) AS nb FROM CONFIGURATION");
         resultSet.next();
-        assertThat(resultSet.getInt("nb")).isEqualTo(37);
+        assertThat(resultSet.getInt("nb")).isEqualTo(38);
 
     }
 

@@ -13,6 +13,8 @@
  **/
 package org.bonitasoft.platform.configuration.impl;
 
+import static org.bonitasoft.platform.configuration.impl.ConfigurationFields.*;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -25,11 +27,6 @@ import org.springframework.jdbc.core.RowMapper;
 public class FullBonitaConfigurationRowMapper implements RowMapper<FullBonitaConfiguration> {
 
     public static final String SELECT_CONFIGURATION = "SELECT tenant_id, content_type, resource_name, resource_content FROM configuration ORDER BY tenant_id, content_type, resource_name";
-
-    public static final String TENANT_ID = "tenant_id";
-    public static final String CONTENT_TYPE = "content_type";
-    public static final String RESOURCE_NAME = "resource_name";
-    public static final String RESOURCE_CONTENT = "resource_content";
 
     @Override
     public FullBonitaConfiguration mapRow(ResultSet rs, int rowNum) throws SQLException {

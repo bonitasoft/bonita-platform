@@ -135,15 +135,17 @@ public class PlatformSetupTest {
         //then
         List<Map<String, Object>> rows = jdbcTemplate
                 .queryForList("SELECT * FROM CONFIGURATION WHERE content_type= '" + ConfigurationType.TENANT_TEMPLATE_PORTAL + "' ORDER BY resource_name");
-        assertThat(rows).hasSize(8);
-        assertThat(rows.get(0).get("RESOURCE_NAME")).isEqualTo("authenticationManager-config.properties");
-        assertThat(rows.get(1).get("RESOURCE_NAME")).isEqualTo("compound-permissions-mapping.properties");
-        assertThat(rows.get(2).get("RESOURCE_NAME")).isEqualTo("console-config.properties");
-        assertThat(rows.get(3).get("RESOURCE_NAME")).isEqualTo("custom-permissions-mapping.properties");
-        assertThat(rows.get(4).get("RESOURCE_NAME")).isEqualTo("dynamic-permissions-checks.properties");
-        assertThat(rows.get(5).get("RESOURCE_NAME")).isEqualTo("forms-config.properties");
-        assertThat(rows.get(6).get("RESOURCE_NAME")).isEqualTo("resources-permissions-mapping.properties");
-        assertThat(rows.get(7).get("RESOURCE_NAME")).isEqualTo("security-config.properties");
+        assertThat(rows).hasSize(9);
+        int rowId = 0;
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("authenticationManager-config.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("autologin-v6.json");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("compound-permissions-mapping.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("console-config.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("custom-permissions-mapping.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("dynamic-permissions-checks.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("forms-config.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("resources-permissions-mapping.properties");
+        assertThat(rows.get(rowId++).get("RESOURCE_NAME")).isEqualTo("security-config.properties");
     }
 
     @Test
@@ -246,7 +248,8 @@ public class PlatformSetupTest {
                 "ProfilePermissionRule.groovy",
                 "TaskExecutionPermissionRule.groovy",
                 "TaskPermissionRule.groovy",
-                "UserPermissionRule.groovy");
+                "UserPermissionRule.groovy",
+                "autologin-v6.json");
 
     }
 
