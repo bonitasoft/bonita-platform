@@ -35,8 +35,7 @@ public class DeleteAllConfigurationInTransaction extends TransactionCallbackWith
 
     @Override
     protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-        LOGGER.info("Delete all configuration.");
-
+        LOGGER.debug("Execute DeleteAllConfigurationInTransaction transaction.");
         jdbcTemplate.batchUpdate(BonitaConfigurationCleaner.DELETE_ALL_CONFIGURATION,
                 new BonitaConfigurationCleaner());
 

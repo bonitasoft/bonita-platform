@@ -127,13 +127,13 @@ public class PlatformSetup {
         if (!isPlatformAlreadyCreated()) {
             throw new PlatformException("Platform is not created. run platform setup before pushing configuration.");
         }
+        LOGGER.info("Configuration currently in database will be replace by configuration from folder: " + folderToPush.toString());
         clean();
         if (Files.isDirectory(folderToPush)) {
-            LOGGER.info("Pushing configuration from folder:" + folderToPush.toString());
             pushConfigurationFromSetupFolder(folderToPush);
             pushLicenses();
         } else {
-            LOGGER.info("Folder :" + folderToPush.toAbsolutePath() + " does not exist, using classpath.");
+            LOGGER.warn("Folder :" + folderToPush.toAbsolutePath() + " does not exist, using classpath.");
             //TODO must be kept in order to not have everything broken, but remove that after changes on other modules
             pushConfigurationFromClassPath();
         }

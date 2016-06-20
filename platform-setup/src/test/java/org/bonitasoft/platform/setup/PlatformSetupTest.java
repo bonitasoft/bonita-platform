@@ -341,8 +341,8 @@ public class PlatformSetupTest {
         final String log = systemOutRule.getLogWithNormalizedLineSeparator();
         final String[] split = log.split("\n");
         assertThat(split).as("should log message").isNotEmpty();
-        assertThat(split[split.length - 1]).as("should log message").contains("INFO")
-                .endsWith("Delete all configuration.");
+        assertThat(split[split.length - 1]).as("should log message").contains("DEBUG")
+                .endsWith("Execute DeleteAllConfigurationInTransaction transaction.");
 
         platformSetup.pull(path, licensePath);
         List<FullBonitaConfiguration> configurations = new ArrayList<>();
