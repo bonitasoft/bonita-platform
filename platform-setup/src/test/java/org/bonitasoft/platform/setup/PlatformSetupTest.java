@@ -21,6 +21,7 @@ import static org.bonitasoft.platform.setup.PlatformSetup.BONITA_SETUP_FOLDER;
 import static org.bonitasoft.platform.setup.PlatformSetup.PLATFORM_CONF_FOLDER_NAME;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class PlatformSetupTest {
         File setupFolder = temporaryFolder.newFolder("conf");
         System.setProperty(BONITA_SETUP_FOLDER, setupFolder.getAbsolutePath());
         FileUtils.write(setupFolder.toPath().resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve("platform_init_engine")
-                .resolve("bonita-platform-init-community.properties").toFile(), "custom content");
+                .resolve("bonita-platform-init-community.properties").toFile(), "custom content", Charset.defaultCharset());
         configurationFolderUtil.buildSqlFolder(setupFolder.toPath(), dbVendor);
 
         //when
@@ -191,23 +192,23 @@ public class PlatformSetupTest {
 
     @Test
     public void should_extract_configuration() throws Exception {
-        final File destFolder = temporaryFolder.newFolder("setup");
+        final File destinationFolder = temporaryFolder.newFolder("setup");
         //given
         platformSetup.init();
 
         //when
-        System.setProperty(BONITA_SETUP_FOLDER, destFolder.getAbsolutePath());
+        System.setProperty(BONITA_SETUP_FOLDER, destinationFolder.getAbsolutePath());
         platformSetup.pull();
 
         //then
-        File folderContainingResultOfGet = destFolder.toPath().resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current").toFile();
+        File folderContainingResultOfGet = destinationFolder.toPath().resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current").toFile();
         assertThat(folderContainingResultOfGet).as("should retrieve config files")
                 .exists()
                 .isDirectory();
 
         List<FullBonitaConfiguration> configurations = new ArrayList<>();
         AllConfigurationResourceVisitor allConfigurationResourceVisitor = new AllConfigurationResourceVisitor(configurations);
-        Files.walkFileTree(destFolder.toPath(), allConfigurationResourceVisitor);
+        Files.walkFileTree(destinationFolder.toPath(), allConfigurationResourceVisitor);
 
         assertThat(configurations).extracting("resourceName").containsOnly(
                 "bonita-platform-community-custom.properties",
@@ -417,6 +418,61 @@ public class PlatformSetupTest {
         final Path licFolder = temporaryFolder.newFolder("licenses").toPath();
         platformSetup.pull(destinationFolder, licFolder);
 
+    }
+
+    @Test
+    public void pushLicences_should_pass_if_licence_folder_does_not_exists() throws Exception {
+        platformSetup.initProperties();
+        platformSetup.preventFromPushingZeroLicense();
+    }
+
+    @Test
+    public void pushLicences_should_fail_if_licence_folder_exists_but_is_empty() throws Exception {
+        final Path setupFolder = temporaryFolder.newFolder().toPath();
+        System.setProperty(BONITA_SETUP_FOLDER, setupFolder.toString());
+        final Path platform_conf = configurationFolderUtil.buildPlatformConfFolder(setupFolder);
+
+        final Path licenseFolder = platform_conf.resolve("licenses");
+        Files.createDirectories(licenseFolder);
+
+        expectedException.expect(PlatformException.class);
+        expectedException.expectMessage("No license (.lic file) found. This would prevent Bonita BPM Platform subscription edition"
+                + " to start normally. Place your license file in " + licenseFolder.toString() + " and then try again.");
+
+        platformSetup.initProperties();
+        platformSetup.preventFromPushingZeroLicense();
+    }
+
+    @Test
+    public void pushLicences_should_fail_if_no_license_file_with_lic_extension_exists() throws Exception {
+        final Path setupFolder = temporaryFolder.newFolder().toPath();
+        System.setProperty(BONITA_SETUP_FOLDER, setupFolder.toString());
+        final Path platform_conf = configurationFolderUtil.buildPlatformConfFolder(setupFolder);
+
+        final Path licenseFolder = platform_conf.resolve("licenses");
+        Files.createDirectories(licenseFolder);
+        Files.createFile(licenseFolder.resolve("bonita-file.renamed"));
+
+        expectedException.expect(PlatformException.class);
+        expectedException.expectMessage("No license (.lic file) found. This would prevent Bonita BPM Platform subscription edition"
+                + " to start normally. Place your license file in " + licenseFolder.toString() + " and then try again.");
+
+        platformSetup.initProperties();
+        platformSetup.preventFromPushingZeroLicense();
+    }
+
+    @Test
+    public void pushLicences_should_pass_if_at_least_one_licence_found() throws Exception {
+        final Path setupFolder = temporaryFolder.newFolder().toPath();
+        System.setProperty(BONITA_SETUP_FOLDER, setupFolder.toString());
+        final Path platform_conf = configurationFolderUtil.buildPlatformConfFolder(setupFolder);
+
+        final Path licenseFolder = platform_conf.resolve("licenses");
+        Files.createDirectories(licenseFolder);
+        Files.createFile(licenseFolder.resolve("bonita-file.lic"));
+
+        platformSetup.initProperties();
+        platformSetup.preventFromPushingZeroLicense();
     }
 
 }

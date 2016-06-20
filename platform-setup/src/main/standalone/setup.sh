@@ -12,6 +12,7 @@ testReturnCode() {
   COD_RET=$1
   if [ ${COD_RET} -ne 0 ]; then
     echo "ERROR $1 $2"
+    cd - 1>/dev/null
     exit ${COD_RET}
   fi
 }
@@ -20,8 +21,9 @@ check_is_installed() {
 	command -v $1 >/dev/null 2>&1 || {
                 # command $1 not present:
                 echo >&2 "For better feedback, please consider installing Unix 'tree' command"
-                exit 1;
+                return 1
           }
+     return 0
 }
 
 BONITA_DATABASE=$( grep '^db.vendor=' database.properties | sed -e 's/db.vendor=//g' )
@@ -55,4 +57,4 @@ if [ "${ACTION}" = "pull" ]; then
 fi
 
 # restore previous folder:
-cd -
+cd - 1>/dev/null

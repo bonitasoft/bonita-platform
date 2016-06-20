@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 
 /**
@@ -33,6 +34,9 @@ public class ConfigurationCheckerTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void tryToLoadDriverClass_should_load_class_if_present() throws Exception {
@@ -51,11 +55,11 @@ public class ConfigurationCheckerTest {
 
     @Test
     public void tryToLoadDriverClass_should_fail_if_class_to_load_is_not_set() throws Exception {
-        final String sqlserver = "sqlserver";
-        System.setProperty("sysprop.bonita.db.vendor", sqlserver);
+        final String dbVendor = "dbVendor";
+        System.setProperty("sysprop.bonita.db.vendor", dbVendor);
 
         expectedException.expect(PlatformException.class);
-        expectedException.expectMessage("Driver class name not set for database " + sqlserver);
+        expectedException.expectMessage("Driver class name not set for database " + dbVendor);
 
         new ConfigurationChecker().validate();
     }
@@ -68,4 +72,5 @@ public class ConfigurationCheckerTest {
 
         verify(checker).validateDriverClass();
     }
+
 }

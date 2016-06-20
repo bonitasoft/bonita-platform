@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.bonitasoft.platform.configuration.ConfigurationService;
 import org.bonitasoft.platform.configuration.impl.ConfigurationServiceImpl;
 import org.bonitasoft.platform.configuration.model.BonitaConfiguration;
@@ -106,6 +107,7 @@ public class PlatformSetup {
      */
     public void init() throws PlatformException {
         initPlatformSetup();
+        preventFromPushingZeroLicense();
         if (isPlatformAlreadyCreated()) {
             LOGGER.info("Platform is already created. Nothing to do.");
         } else {
@@ -148,6 +150,7 @@ public class PlatformSetup {
      */
     public void push() throws PlatformException {
         initPlatformSetup();
+        preventFromPushingZeroLicense();
         checkPlatformVersion();
         push(currentConfigurationFolder);
         LOGGER.info("Configuration (and license) files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
@@ -164,7 +167,9 @@ public class PlatformSetup {
     void pull() throws PlatformException {
         initPlatformSetup();
         LOGGER.info("Pulling configuration into folder: " + currentConfigurationFolder);
-        LOGGER.info("Pulling licenses into folder: " + licensesFolder);
+        if (Files.isDirectory(licensesFolder)) {
+            LOGGER.info("Pulling licenses into folder: " + licensesFolder);
+        }
         pull(currentConfigurationFolder, licensesFolder);
         LOGGER.info("Configuration (and license) files successfully pulled. You can now edit them. Use \"setup push\" when done");
     }
@@ -172,7 +177,10 @@ public class PlatformSetup {
     public void pull(Path configurationFolder, Path licensesFolder) throws PlatformException {
         checkPlatformVersion();
         try {
-            recreateDirectory(configurationFolder, licensesFolder);
+            recreateDirectory(configurationFolder);
+            if (Files.isDirectory(licensesFolder)) {
+                FileUtils.cleanDirectory(licensesFolder.toFile());
+            }
             configurationService.writeAllConfigurationToFolder(configurationFolder.toFile(), licensesFolder.toFile());
         } catch (IOException e) {
             throw new PlatformException(e);
@@ -201,11 +209,9 @@ public class PlatformSetup {
      * @throws PlatformException
      */
     private void pushLicenses() throws PlatformException {
-        LOGGER.info("Pushing license files from folder:" + licensesFolder.toString());
         if (Files.isDirectory(licensesFolder)) {
+            LOGGER.info("Pushing license files from folder:" + licensesFolder.toString());
             configurationService.storeLicenses(licensesFolder.toFile());
-        } else {
-            LOGGER.warn("Folder does not exists, no licenses pushed");
         }
     }
 
@@ -213,7 +219,7 @@ public class PlatformSetup {
         scriptExecutor.createAndInitializePlatformIfNecessary();
     }
 
-    private void initProperties() {
+    void initProperties() {
         if (dbVendor == null) {
             dbVendor = System.getProperty("sysprop.bonita.db.vendor");
         }
@@ -372,5 +378,16 @@ public class PlatformSetup {
 
     public ConfigurationService getConfigurationService() {
         return configurationService;
+    }
+
+    void preventFromPushingZeroLicense() throws PlatformException {
+        if (Files.isDirectory(licensesFolder)) {
+            final String[] licenseFiles = licensesFolder.toFile().list(new RegexFileFilter(".*\\.lic"));
+            if (licenseFiles.length == 0) {
+                throw new PlatformException("No license (.lic file) found. "
+                        + "This would prevent Bonita BPM Platform subscription edition to start normally. " +
+                        "Place your license file in " + licensesFolder.toString() + " and then try again.");
+            }
+        }
     }
 }

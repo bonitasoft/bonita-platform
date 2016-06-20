@@ -26,6 +26,12 @@ import java.nio.file.Path;
  */
 public class ConfigurationFolderUtil {
 
+    public Path buildPlatformConfFolder(Path rootFolder) throws IOException {
+        Path initialFolder = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME);
+        Files.createDirectories(initialFolder);
+        return initialFolder;
+    }
+
     public void buildInitialFolder(Path rootFolder) throws IOException {
         Path initialFolder = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial");
         Files.createDirectories(initialFolder.resolve("platform-init"));

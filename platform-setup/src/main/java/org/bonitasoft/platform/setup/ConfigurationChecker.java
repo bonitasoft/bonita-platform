@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>checks that the driver class if found and can be loaded</li>
  * </ul>
- * 
+ *
  * @author Emmanuel Duchastenier
  */
 public class ConfigurationChecker {
@@ -78,4 +78,5 @@ public class ConfigurationChecker {
                     e);
         }
     }
+
 }
