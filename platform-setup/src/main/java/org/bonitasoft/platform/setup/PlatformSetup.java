@@ -372,7 +372,7 @@ public class PlatformSetup {
         }
     }
 
-    private void initPlatformSetup() throws PlatformException {
+    public void initPlatformSetup() throws PlatformException {
         initProperties();
         initDataSource();
         initServices();
