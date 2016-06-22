@@ -32,9 +32,14 @@ echo action is %ACTION%
 
 java -cp "%BASEDIR%;%CFG_FOLDER%;%INITIAL_CFG_FOLDER%;%LIB_FOLDER%\*" -Dorg.bonitasoft.platform.setup.action=%ACTION% -Dspring.profiles.active=default -Dsysprop.bonita.db.vendor=%BONITA_DATABASE% org.bonitasoft.platform.setup.PlatformSetupApplication
 
+if errorlevel 1 (
+    echo ERROR 1 Executing platform setup
+    exit /b 1
+)
+
 IF "%ACTION%" == "pull" (
         echo Pulled configuration:
-        tree %CFG_FOLDER%\current
+        tree /F %CFG_FOLDER%\current 
 )
 
 rem restore previous folder:
