@@ -65,6 +65,8 @@ public class PlatformSetup {
 
     public static final String PLATFORM_CONF_FOLDER_NAME = "platform_conf";
 
+    public static final String BONITA_CLIENT_HOME_FOLDER = "bonita.client.home";
+
     @Autowired
     private ScriptExecutor scriptExecutor;
 
@@ -237,7 +239,15 @@ public class PlatformSetup {
     private void initializeFoldersPaths(Path platformConfFolder) {
         initialConfigurationFolder = platformConfFolder.resolve("initial");
         currentConfigurationFolder = platformConfFolder.resolve("current");
-        licensesFolder = platformConfFolder.resolve("licenses");
+        licensesFolder = getLicenseInitialFolder(platformConfFolder);
+    }
+
+    private Path getLicenseInitialFolder(Path platformConfFolder) {
+        final String bonita_client_home = System.getProperty(BONITA_CLIENT_HOME_FOLDER);
+        if (bonita_client_home != null) {
+            return Paths.get(bonita_client_home);
+        }
+        return platformConfFolder.resolve("licenses");
     }
 
     private void pushConfigurationFromSetupFolder(Path folderToPush) throws PlatformException {
