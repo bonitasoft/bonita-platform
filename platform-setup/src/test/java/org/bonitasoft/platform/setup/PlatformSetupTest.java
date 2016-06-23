@@ -320,7 +320,7 @@ public class PlatformSetupTest {
 
         //expect
         expectedException.expect(PlatformException.class);
-        expectedException.expectMessage("Platform is not created. run platform setup before pushing configuration.");
+        expectedException.expectMessage("Platform is not created. Run 'setup init' first.");
 
         //when
         platformSetup.push();
@@ -417,9 +417,7 @@ public class PlatformSetupTest {
                 "Platform version [bad version] is not supported by current platform setup version [" + versionService.getPlatformSetupVersion() + "]");
 
         //when
-        final Path destinationFolder = temporaryFolder.newFolder("destinationFolder").toPath();
-        final Path licFolder = temporaryFolder.newFolder("licenses").toPath();
-        platformSetup.pull(destinationFolder, licFolder);
+        platformSetup.pull();
 
     }
 

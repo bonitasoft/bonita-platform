@@ -67,10 +67,10 @@ public class VersionServiceImpl implements VersionService {
         try {
             strings = jdbcTemplate.query(SQL_PLATFORM_VERSION, new PlatformRowMapper());
         } catch (DataAccessException e) {
-            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.", e);
+            throw new PlatformException("Platform is not created. Run 'setup init' first.", e);
         }
         if (hasNotSingleResult(strings)) {
-            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.");
+            throw new PlatformException("Platform is not created. Run 'setup init' first.");
         }
         return strings.get(0);
     }

@@ -127,7 +127,7 @@ public class PlatformSetup {
 
     private void push(Path folderToPush) throws PlatformException {
         if (!isPlatformAlreadyCreated()) {
-            throw new PlatformException("Platform is not created. run platform setup before pushing configuration.");
+            throw new PlatformException("Platform is not created. Run platform setup before pushing your configuration.");
         }
         LOGGER.info("Configuration currently in database will be replace by configuration from folder: " + folderToPush.toString());
         clean();
@@ -168,16 +168,16 @@ public class PlatformSetup {
      */
     void pull() throws PlatformException {
         initPlatformSetup();
+        checkPlatformVersion();
         LOGGER.info("Pulling configuration into folder: " + currentConfigurationFolder);
         if (Files.isDirectory(licensesFolder)) {
             LOGGER.info("Pulling licenses into folder: " + licensesFolder);
         }
         pull(currentConfigurationFolder, licensesFolder);
-        LOGGER.info("Configuration (and license) files successfully pulled. You can now edit them. Use \"setup push\" when done");
+        LOGGER.info("Configuration (and license) files successfully pulled. You can now edit them. Use \"setup push\" when done.");
     }
 
     public void pull(Path configurationFolder, Path licensesFolder) throws PlatformException {
-        checkPlatformVersion();
         try {
             recreateDirectory(configurationFolder);
             if (Files.isDirectory(licensesFolder)) {
