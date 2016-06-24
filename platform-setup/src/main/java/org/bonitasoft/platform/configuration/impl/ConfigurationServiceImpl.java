@@ -60,6 +60,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     private static final int NON_TENANT_RESOURCE = 0;
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ConfigurationServiceImpl.class);
 
     private JdbcTemplate jdbcTemplate;
@@ -206,8 +207,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public BonitaConfiguration getTenantPortalAutoLoginConf(long tenantId) {
-        return getBonitaConfiguration(ConfigurationType.TENANT_PORTAL, tenantId, "autologin-v6.json");
+    public BonitaConfiguration getTenantPortalConfiguration(long tenantId, String file) {
+        return getBonitaConfiguration(ConfigurationType.TENANT_PORTAL, tenantId, file);
     }
 
     @Override

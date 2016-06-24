@@ -163,12 +163,13 @@ public interface ConfigurationService {
     List<BonitaConfiguration> getTenantPortalConf(long tenantId);
 
     /**
-     * Retrieves the portal auto login configuration for a tenant
+     * Retrieves a portal configuration file for a tenant
      *
      * @param tenantId
-     * @return files
+     * @param file
+     * @return file
      */
-    BonitaConfiguration getTenantPortalAutoLoginConf(long tenantId);
+    BonitaConfiguration getTenantPortalConfiguration(long tenantId, String file);
 
     /**
      * Read configuration files located under configuration root folder
