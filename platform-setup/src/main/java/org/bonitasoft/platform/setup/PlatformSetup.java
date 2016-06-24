@@ -23,7 +23,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -59,7 +58,7 @@ public class PlatformSetup {
 
     public static final String BONITA_SETUP_FOLDER = "org.bonitasoft.platform.setup.folder";
 
-    public static final String BONITA_SETUP_ACTION = "org.bonitasoft.platform.setup.action";
+    static final String BONITA_SETUP_ACTION = "org.bonitasoft.platform.setup.action";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PlatformSetup.class);
 
@@ -112,33 +111,30 @@ public class PlatformSetup {
         preventFromPushingZeroLicense();
         if (isPlatformAlreadyCreated()) {
             LOGGER.info("Platform is already created. Nothing to do.");
-        } else {
-            initializePlatform();
-            LOGGER.info("Platform created.");
-            push(initialConfigurationFolder);
-            LOGGER.info("Initial configuration (and license) files successfully pushed to database");
+            return;
         }
-
+        initializePlatform();
+        LOGGER.info("Platform created.");
+        if (Files.isDirectory(initialConfigurationFolder)) {
+            LOGGER.info("Database will be initialized with configuration files from folder: " + currentConfigurationFolder.toString());
+            pushFromFolder(initialConfigurationFolder);
+        } else {
+            LOGGER.warn("Database will be initialized with configuration files from classpath");
+            initConfigurationWithClasspath();
+        }
+        pushLicenses();
+        LOGGER.info("Initial configuration files successfully pushed to database");
     }
 
     boolean isPlatformAlreadyCreated() {
         return scriptExecutor.isPlatformAlreadyCreated();
     }
 
-    private void push(Path folderToPush) throws PlatformException {
-        if (!isPlatformAlreadyCreated()) {
-            throw new PlatformException("Platform is not created. Run platform setup before pushing your configuration.");
+    private void pushFromFolder(Path folderToPush) throws PlatformException {
+        if (!Files.isDirectory(folderToPush)) {
+            throw new PlatformException("Unable to push configuration from " + folderToPush + ", directory does not exists. Run platform setup before pushing your configuration.");
         }
-        LOGGER.info("Configuration currently in database will be replace by configuration from folder: " + folderToPush.toString());
-        clean();
-        if (Files.isDirectory(folderToPush)) {
-            pushConfigurationFromSetupFolder(folderToPush);
-            pushLicenses();
-        } else {
-            LOGGER.warn("Folder :" + folderToPush.toAbsolutePath() + " does not exist, using classpath.");
-            //TODO must be kept in order to not have everything broken, but remove that after changes on other modules
-            pushConfigurationFromClassPath();
-        }
+        pushConfigurationFromSetupFolder(folderToPush);
     }
 
     void clean() {
@@ -152,10 +148,16 @@ public class PlatformSetup {
      */
     public void push() throws PlatformException {
         initPlatformSetup();
+        if (!isPlatformAlreadyCreated()) {
+            throw new PlatformException("Platform is not created. Run 'setup init' first.");
+        }
         preventFromPushingZeroLicense();
         checkPlatformVersion();
-        push(currentConfigurationFolder);
-        LOGGER.info("Configuration (and license) files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
+        LOGGER.info("Configuration currently in database will be replace by configuration from folder: " + currentConfigurationFolder.toString());
+        clean();
+        pushFromFolder(currentConfigurationFolder);
+        pushLicenses();
+        LOGGER.info("Configuration files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
     }
 
     /**
@@ -211,10 +213,12 @@ public class PlatformSetup {
      * @throws PlatformException
      */
     private void pushLicenses() throws PlatformException {
-        if (Files.isDirectory(licensesFolder)) {
-            LOGGER.info("Pushing license files from folder:" + licensesFolder.toString());
-            configurationService.storeLicenses(licensesFolder.toFile());
+        if (!Files.isDirectory(licensesFolder)) {
+            //do nothing in community
+            return;
         }
+        LOGGER.info("Pushing license files from folder:" + licensesFolder.toString());
+        configurationService.storeLicenses(licensesFolder.toFile());
     }
 
     private void initializePlatform() throws PlatformException {
@@ -255,7 +259,7 @@ public class PlatformSetup {
 
     }
 
-    private void pushConfigurationFromClassPath() throws PlatformException {
+    private void initConfigurationWithClasspath() throws PlatformException {
         try {
             List<BonitaConfiguration> platformInitConfigurations = new ArrayList<>();
             addIfExists(platformInitConfigurations, ConfigurationType.PLATFORM_INIT_ENGINE, "bonita-platform-init-community-custom.properties");

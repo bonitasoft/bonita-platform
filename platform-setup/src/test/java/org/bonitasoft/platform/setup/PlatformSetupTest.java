@@ -61,7 +61,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 public class PlatformSetupTest {
 
     @Rule
-    public final ClearSystemProperties bonitaSetupFolder = new ClearSystemProperties(BONITA_SETUP_FOLDER);
+    public final ClearSystemProperties clearSystemProperties = new ClearSystemProperties(BONITA_SETUP_FOLDER);
 
     @Rule
     public final SystemOutRule systemOutRule = new SystemOutRule().enableLog().muteForSuccessfulTests();
@@ -272,7 +272,7 @@ public class PlatformSetupTest {
         assertThat(log).as("should create platform and log message").contains("Platform created.");
         assertThat(split[split.length - 1]).as("should push Initial configuration and log message")
                 .contains("INFO")
-                .endsWith("Initial configuration (and license) files successfully pushed to database");
+                .endsWith("Initial configuration files successfully pushed to database");
     }
 
     @Test
@@ -300,6 +300,9 @@ public class PlatformSetupTest {
     public void push_method_should_log_when_created() throws Exception {
         // given
         platformSetup.init();
+        File setupFolder = temporaryFolder.newFolder("conf");
+        System.setProperty(BONITA_SETUP_FOLDER, setupFolder.getAbsolutePath());
+        configurationFolderUtil.buildCurrentFolder(setupFolder.toPath());
 
         // when
         systemOutRule.clearLog();
@@ -310,7 +313,7 @@ public class PlatformSetupTest {
 
         // then
         assertThat(split[split.length - 1]).as("should push new configuration and log message").contains("INFO")
-                .endsWith("Configuration (and license) files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
+                .endsWith("Configuration files successfully pushed to database. You can now restart Bonita BPM to reflect your changes.");
     }
 
     @Test
