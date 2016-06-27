@@ -23,6 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -132,7 +133,10 @@ public class PlatformSetup {
 
     private void pushFromFolder(Path folderToPush) throws PlatformException {
         if (!Files.isDirectory(folderToPush)) {
-            throw new PlatformException("Unable to push configuration from " + folderToPush + ", directory does not exists. Run platform setup before pushing your configuration.");
+            throw new PlatformException(
+                    "Unable to push configuration from " + folderToPush
+                            + ", as directory does not exists. To modify your configuration, run 'setup pull', update your configuration files from "
+                            + currentConfigurationFolder + " folder, and then push your new configuration.");
         }
         pushConfigurationFromSetupFolder(folderToPush);
     }
