@@ -19,6 +19,7 @@ import static org.bonitasoft.platform.configuration.type.ConfigurationType.PLATF
 import static org.bonitasoft.platform.configuration.type.ConfigurationType.TENANT_TEMPLATE_PORTAL;
 import static org.bonitasoft.platform.setup.PlatformSetup.BONITA_SETUP_FOLDER;
 import static org.bonitasoft.platform.setup.PlatformSetup.PLATFORM_CONF_FOLDER_NAME;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -388,6 +389,37 @@ public class PlatformSetupTest {
         Files.walkFileTree(checkPath, new AllConfigurationResourceVisitor(configurations));
         assertThat(configurations).as("should remove all files").hasSize(1)
                 .extracting("resourceName").containsOnly("current.properties");
+    }
+
+    @Test
+    public void push_method_should_throw_exception_if_no_current_folder() throws Exception {
+        //given
+        List<FullBonitaConfiguration> configurations = new ArrayList<>();
+        final Path confFolder = temporaryFolder.newFolder().toPath();
+        configurationFolderUtil.buildInitialFolder(confFolder);
+        configurationFolderUtil.buildSqlFolder(confFolder, dbVendor);
+
+        System.setProperty(BONITA_SETUP_FOLDER, confFolder.toString());
+        platformSetup.init();
+        Path current = confFolder.resolve("platform_conf").resolve("current");
+
+        //when
+        try {
+            platformSetup.push();
+            fail();
+        } catch (PlatformException ignored) {
+            assertThat(ignored.getMessage()).isEqualTo("Unable to push configuration from " +
+                    current +
+                    ", as directory does not exists. To modify your configuration, run 'setup pull', update your configuration files from " +
+                    current +
+                    " folder, and then push your new configuration.");
+            //ok
+        }
+        //then
+        platformSetup.pull();
+        Files.walkFileTree(current, new AllConfigurationResourceVisitor(configurations));
+        assertThat(configurations).as("should have kept old files").hasSize(1)
+                .extracting("resourceName").containsOnly("initialConfig.properties");
     }
 
     @Test

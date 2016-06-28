@@ -44,7 +44,7 @@ public class ConfigurationFolderUtilTest {
         configurationFolderUtil.buildInitialFolder(setupFolder);
 
         //then
-        final File expectedFolder = setupFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve("platform-init").toFile();
+        final File expectedFolder = setupFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve("platform_init_engine").toFile();
         assertThat(expectedFolder).exists().isDirectory();
         assertThat(expectedFolder.listFiles()).extracting("name").hasSize(1).containsOnly("initialConfig.properties");
     }
@@ -59,7 +59,7 @@ public class ConfigurationFolderUtilTest {
         configurationFolderUtil.buildCurrentFolder(setupFolder);
 
         //then
-        final File expectedFolder = setupFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current").resolve("platform-init").toFile();
+        final File expectedFolder = setupFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current").resolve("platform_init_engine").toFile();
         assertThat(expectedFolder).exists().isDirectory();
         assertThat(expectedFolder.listFiles()).extracting("name").hasSize(1).containsOnly("currentConfig.properties");
     }

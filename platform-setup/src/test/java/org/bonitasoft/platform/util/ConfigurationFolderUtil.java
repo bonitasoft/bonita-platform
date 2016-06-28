@@ -33,15 +33,15 @@ public class ConfigurationFolderUtil {
     }
 
     public void buildInitialFolder(Path rootFolder) throws IOException {
-        Path initialFolder = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial");
-        Files.createDirectories(initialFolder.resolve("platform-init"));
-        Files.write(initialFolder.resolve("platform-init").resolve("initialConfig.properties"), "key=value".getBytes());
+        Path platform_init_engine = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve("platform_init_engine");
+        Files.createDirectories(platform_init_engine);
+        Files.write(platform_init_engine.resolve("initialConfig.properties"), "key=value".getBytes());
     }
 
     public void buildCurrentFolder(Path rootFolder) throws IOException {
-        Path currentFolder = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current");
-        Files.createDirectories(currentFolder.resolve("platform-init"));
-        Files.write(currentFolder.resolve("platform-init").resolve("currentConfig.properties"), "key=value".getBytes());
+        Path platform_init_engine = rootFolder.resolve(PLATFORM_CONF_FOLDER_NAME).resolve("current").resolve("platform_init_engine");
+        Files.createDirectories(platform_init_engine);
+        Files.write(platform_init_engine.resolve("currentConfig.properties"), "key=value".getBytes());
     }
 
     public void buildSqlFolder(Path rootFolder, String dbVendor) throws IOException {

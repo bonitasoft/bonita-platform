@@ -132,13 +132,16 @@ public class PlatformSetup {
     }
 
     private void pushFromFolder(Path folderToPush) throws PlatformException {
+        configurationService.storeAllConfiguration(folderToPush.toFile());
+    }
+
+    private void checkPushFolderExists(Path folderToPush) throws PlatformException {
         if (!Files.isDirectory(folderToPush)) {
             throw new PlatformException(
                     "Unable to push configuration from " + folderToPush
                             + ", as directory does not exists. To modify your configuration, run 'setup pull', update your configuration files from "
                             + currentConfigurationFolder + " folder, and then push your new configuration.");
         }
-        pushConfigurationFromSetupFolder(folderToPush);
     }
 
     void clean() {
@@ -157,6 +160,7 @@ public class PlatformSetup {
         }
         preventFromPushingZeroLicense();
         checkPlatformVersion();
+        checkPushFolderExists(currentConfigurationFolder);
         LOGGER.info("Configuration currently in database will be replace by configuration from folder: " + currentConfigurationFolder.toString());
         clean();
         pushFromFolder(currentConfigurationFolder);
@@ -256,11 +260,6 @@ public class PlatformSetup {
             return Paths.get(bonita_client_home);
         }
         return platformConfFolder.resolve("licenses");
-    }
-
-    private void pushConfigurationFromSetupFolder(Path folderToPush) throws PlatformException {
-        configurationService.storeAllConfiguration(folderToPush.toFile());
-
     }
 
     private void initConfigurationWithClasspath() throws PlatformException {
