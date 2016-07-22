@@ -57,8 +57,9 @@ class ProcessPermissionRule implements PermissionRule {
     private boolean checkGetMethod(APICallContext apiCallContext, APIAccessor apiAccessor, long currentUserId, Logger logger) {
         def processAPI = apiAccessor.getProcessAPI()
         def filters = apiCallContext.getFilters()
-        if (apiCallContext.getResourceId() != null) {
-            def processId = Long.valueOf(apiCallContext.getResourceId())
+        def resourceIds = apiCallContext.getCompoundResourceId()
+        if (!resourceIds.isEmpty()) {
+            def processId = Long.parseLong(resourceIds.get(0))
             def processDefinition = processAPI.getProcessDeploymentInfo(processId);
             def deployedByUser = processDefinition.getDeployedBy() == currentUserId
             if(deployedByUser){
@@ -86,9 +87,10 @@ class ProcessPermissionRule implements PermissionRule {
         return false;
     }
     private boolean checkPutMethod(APICallContext apiCallContext, APIAccessor apiAccessor, long currentUserId, Logger logger) {
-        def processAPI = apiAccessor.getProcessAPI()
-        if (apiCallContext.getResourceId() != null) {
-            def processId = Long.valueOf(apiCallContext.getResourceId())
+        def resourceIds = apiCallContext.getCompoundResourceId()
+        if (!resourceIds.isEmpty()) {
+            def processId = Long.parseLong(resourceIds.get(0))
+            def processAPI = apiAccessor.getProcessAPI()
             def isSupervisor = processAPI.isUserProcessSupervisor(processId, currentUserId)
             if(isSupervisor){
                 logger.debug("is supervisor of the process")
