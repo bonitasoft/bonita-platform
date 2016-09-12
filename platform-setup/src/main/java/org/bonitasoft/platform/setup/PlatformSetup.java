@@ -23,7 +23,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -86,6 +85,13 @@ public class PlatformSetup {
     private Path currentConfigurationFolder;
     private Path licensesFolder;
 
+    PlatformSetup(ScriptExecutor scriptExecutor, ConfigurationService configurationService, VersionService versionService, DataSource dataSource) {
+        this.scriptExecutor = scriptExecutor;
+        this.configurationService = configurationService;
+        this.versionService = versionService;
+        this.dataSource = dataSource;
+    }
+
     public PlatformSetup(String dbVendor) {
         this.dbVendor = dbVendor;
     }
@@ -109,11 +115,11 @@ public class PlatformSetup {
      */
     public void init() throws PlatformException {
         initPlatformSetup();
-        preventFromPushingZeroLicense();
         if (isPlatformAlreadyCreated()) {
             LOGGER.info("Platform is already created. Nothing to do.");
             return;
         }
+        preventFromPushingZeroLicense();
         initializePlatform();
         LOGGER.info("Platform created.");
         if (Files.isDirectory(initialConfigurationFolder)) {
