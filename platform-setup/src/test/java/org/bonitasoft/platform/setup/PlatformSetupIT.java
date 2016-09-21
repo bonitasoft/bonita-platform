@@ -118,6 +118,7 @@ public class PlatformSetupIT {
         FileUtils.write(setupFolder.toPath().resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").resolve("platform_init_engine")
                 .resolve("bonita-platform-init-community.properties").toFile(), "custom content", Charset.defaultCharset());
         configurationFolderUtil.buildSqlFolder(setupFolder.toPath(), dbVendor);
+        systemOutRule.clearLog();
 
         //when
         platformSetup.init();
@@ -127,6 +128,8 @@ public class PlatformSetupIT {
                 .queryForList("SELECT * FROM CONFIGURATION WHERE resource_name = 'bonita-platform-init-community.properties'");
         assertThat(rows).hasSize(1);
         assertThat(rows.get(0).get("resource_content")).isEqualTo("custom content".getBytes());
+        assertThat(systemOutRule.getLog()).contains("Database will be initialized with configuration files from folder: "
+                + setupFolder.toPath().resolve(PLATFORM_CONF_FOLDER_NAME).resolve("initial").toString());
     }
 
     @Test

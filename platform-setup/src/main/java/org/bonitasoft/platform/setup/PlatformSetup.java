@@ -23,6 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -123,7 +124,7 @@ public class PlatformSetup {
         initializePlatform();
         LOGGER.info("Platform created.");
         if (Files.isDirectory(initialConfigurationFolder)) {
-            LOGGER.info("Database will be initialized with configuration files from folder: " + currentConfigurationFolder.toString());
+            LOGGER.info("Database will be initialized with configuration files from folder: " + initialConfigurationFolder.toString());
             pushFromFolder(initialConfigurationFolder);
         } else {
             LOGGER.warn("Database will be initialized with configuration files from classpath");
